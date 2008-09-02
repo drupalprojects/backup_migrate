@@ -3,7 +3,7 @@
 
 
 /**
- * @file destinations.inc
+ * @file
  * All of the destination handling code needed for Backup and Migrate.
  */
 
@@ -521,7 +521,7 @@ function backup_migrate_ui_destination_restore_file_confirm_submit($form_id, $fo
   $file_id = $form_values['file_id'];
   if ($destination_id && $file_id) {
     backup_migrate_perform_restore($destination_id, $file_id);
-    watchdog('backup_migrate', t('Database restored from %file_id', array('%file_id' => $file_id)));
+    _backup_migrate_message('Database restored from %file_id', array('%file_id' => $file_id));
   }
   return user_access('access backup files') ? "admin/content/backup_migrate/destination/files/". $destination_id : "admin/content/backup_migrate";
 }
@@ -553,9 +553,7 @@ function backup_migrate_ui_destination_delete_file_confirm_submit($form_id, $for
     $destination_id = $form_values['destination_id'];
     $file_id = $form_values['file_id'];
     backup_migrate_destination_delete_file($destination_id, $file_id);
-    $message = t('Database backup file deleted: %file_id', array('%file_id' => $file_id));
-    watchdog('backup_migrate', $message);
-    drupal_set_message($message);
+    _backup_migrate_message('Database backup file deleted: %file_id', array('%file_id' => $file_id));
   }
   return user_access('access backup files') ? "admin/content/backup_migrate/files" : "admin/content/backup_migrate";
 }

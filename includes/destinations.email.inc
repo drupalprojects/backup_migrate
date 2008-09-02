@@ -3,7 +3,7 @@
 
 
 /**
- * @file destinations.email.inc
+ * @file
  * Functions to handle the email backup destination.
  */
 

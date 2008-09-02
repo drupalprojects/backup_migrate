@@ -42,7 +42,7 @@ function backup_migrate_backup_migrate_profiles() {
   // Get the saved profiless
   $result = db_query('SELECT * FROM {backup_migrate_profiles}');
   while ($profile = db_fetch_array($result)) {
-    $profile['db'] = true;
+    $profile['db'] = TRUE;
     $profile['exclude_tables'] = unserialize($profile['exclude_tables']);
     $profile['nodata_tables'] = unserialize($profile['nodata_tables']);
     $out[$profile['profile_id']] = $profile;
@@ -238,7 +238,7 @@ function _backup_migrate_get_profile_form_item_options() {
  * Get a form to configure the profile.
  */
 function _backup_migrate_ui_backup_settings_form($profile) {
-  drupal_add_js(array('backup_migrate' => array('checkbox_link_text' => t('View as checkboxes'))), 'setting');
+  drupal_add_js(array('backup_migrate' => array('checkboxLinkText' => t('View as checkboxes'))), 'setting');
   drupal_add_js(drupal_get_path('module', 'backup_migrate') .'/backup_migrate.js');
   drupal_add_css(drupal_get_path('module', 'backup_migrate') .'/backup_migrate.css');
 

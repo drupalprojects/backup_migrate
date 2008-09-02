@@ -3,7 +3,7 @@
 
 
 /**
- * @file schedule.inc
+ * @file
  * All of the schedule handling code needed for Backup and Migrate.
  */
 
@@ -63,7 +63,7 @@ function backup_migrate_backup_migrate_schedules() {
   // Get the saved scheduless
   $result = db_query('SELECT * FROM {backup_migrate_schedules}');
   while ($schedule = db_fetch_array($result)) {
-    $schedule['db'] = true;
+    $schedule['db'] = TRUE;
     $out[$schedule['schedule_id']] = $schedule;
   }
   return $out;
@@ -347,7 +347,7 @@ function _backup_migrate_schedule_set_last_run($schedule_id, $timestamp = NULL) 
     $timestamp = time();
   }
   if ($schedule_id) {
-    db_query("UPDATE {backup_migrate_schedules} 
+    db_query("UPDATE {backup_migrate_schedules}
                  SET  last_run = %d
                WHERE schedule_id = '%s'",
       $timestamp,

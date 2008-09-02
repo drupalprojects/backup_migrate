@@ -3,7 +3,7 @@
 
 
 /**
- * @file destinations.browser.inc
+ * @file
  * Functions to handle the browser upload/download backup destination.
  */
 
