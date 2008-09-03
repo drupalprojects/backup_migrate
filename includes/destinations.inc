@@ -521,7 +521,6 @@ function backup_migrate_ui_destination_restore_file_confirm_submit($form_id, $fo
   $file_id = $form_values['file_id'];
   if ($destination_id && $file_id) {
     backup_migrate_perform_restore($destination_id, $file_id);
-    _backup_migrate_message('Database restored from %file_id', array('%file_id' => $file_id));
   }
   return user_access('access backup files') ? "admin/content/backup_migrate/destination/files/". $destination_id : "admin/content/backup_migrate";
 }
