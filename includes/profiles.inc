@@ -59,7 +59,7 @@ function backup_migrate_profile_save_profile(&$profile) {
   if ($profile['profile_id']) {
     db_query("UPDATE {backup_migrate_profiles} 
                  SET  name = '%s',
-                      source_id = '%s'
+                      source_id = '%s',
                       exclude_tables = '%s',
                       nodata_tables = '%s',
                       filename = '%s',
@@ -80,9 +80,10 @@ function backup_migrate_profile_save_profile(&$profile) {
   }
   else {
     $profile['profile_id'] = db_next_id('{backup_migrate_profiles}_profile_id');
-    db_query("INSERT INTO {backup_migrate_profiles} (profile_id, name, exclude_tables, nodata_tables, filename, append_timestamp, timestamp_format, compression) VALUES (%d, '%s', '%s', '%s', '%s', %d, '%s', '%s')",
+    db_query("INSERT INTO {backup_migrate_profiles} (profile_id, name, source_id, exclude_tables, nodata_tables, filename, append_timestamp, timestamp_format, compression) VALUES (%d, '%s', '%s', '%s', '%s', '%s', %d, '%s', '%s')",
       $profile['profile_id'],
       $profile['name'],
+      $profile['source_id'],
       $exclude_tables,
       $nodata_tables,
       $profile['filename'],
