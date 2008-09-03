@@ -36,12 +36,19 @@ function backup_migrate_db_restore($file) {
 /**
  * Build the database dump file. Takes a list of tables to exclude and some formatting options.
  */
-function backup_migrate_db_backup($file, &$settings) {
+function backup_migrate_db_backup($source, $file, &$settings) {
   $settings['filename'] .= ".sql";
   $settings['filemime'] = 'text/x-sql';
 
+  // Switch to a different db if specified.
+  _backup_migrate_db_switch_db(_backup_migrate_destination_glue_url($source, FALSE));
+
   // Dump the database.
   $success = _backup_migrate_get_dump_sql($file, $settings['exclude_tables'], $settings['nodata_tables']);
+
+  // Switch back to the previous db.
+  _backup_migrate_db_switch_db();
+
   return $success ? $file : FALSE;
 }
 
@@ -143,7 +150,7 @@ function _backup_migrate_get_sql_file_footer() {
  * Get a list of tables in the db. Works with MySQL, Postgres not tested.
  */
 function _backup_migrate_get_tables() {
-  $out = "";
+  $out = array();
   // get auto_increment values and names of all tables
   $tables = db_query("show table status");
   while ($table = db_fetch_array($tables)) {
@@ -156,7 +163,7 @@ function _backup_migrate_get_tables() {
  * Get the list of table names.
  */
 function _backup_migrate_get_table_names() {
-  $out = "";
+  $out = array();
   // Get auto_increment values and names of all tables.
   $tables = db_query("show table status");
   while ($table = db_fetch_array($tables)) {
@@ -200,3 +207,27 @@ function _backup_migrate_default_structure_only_tables() {
   return $alltables;
 }
 
+/**
+ * Switch to the db described by the DB URL, or back to previous if none selected.
+ */
+function _backup_migrate_db_switch_db($in_url = NULL) {
+  static $db_stack = array();
+  global $db_url;
+
+  // If no DB URL is specified, pop the previous one and set to it.
+  if ($in_url === NULL && $db_stack) {
+    db_set_active(array_pop($db_stack));
+  }
+
+  // If there is a valid DB URL, switch to it.
+  if ($in_url) {
+    // Make the db_url into an array if needed.
+    if (!is_array($db_url)) {
+      $db_url = array('default' => $db_url);
+    }
+    // Add the new db to the db_url array.
+    $db_url[$in_url] = $in_url;
+    // Switch to the new db and push the old one on the stack
+    $db_stack[] = db_set_active($in_url);
+  }
+}

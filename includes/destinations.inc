@@ -48,6 +48,14 @@ function backup_migrate_backup_migrate_destination_types() {
       'conf_callback' => 'backup_migrate_destination_email_conf',
       'ops' => array('manual backup', 'scheduled backup')
       ),
+    'db' => array(
+      'type_name' => t('Database'),
+      'description' => t('Import the dump directly into another MySQL database.'),
+      'file' => drupal_get_path('module', 'backup_migrate') .'/includes/destinations.db.inc',
+      'save_callback' => 'backup_migrate_destination_db_save',
+      'conf_callback' => 'backup_migrate_destination_db_conf',
+      'ops' => array('source', 'manual backup', 'scheduled backup')
+      ),
   );
 }
 
@@ -77,7 +85,9 @@ function backup_migrate_get_destinations($op = 'all') {
       if ($destination['type'] && isset($types[$destination['type']])) {
         $destination = array_merge($types[$destination['type']], $destination);
       }
-      $destinations[$destination['destination_id']] = $destination;
+      // Parse the location in case that's needed
+      $parts = _backup_migrate_destination_parse_url($destination['location']);
+      $destinations[$destination['destination_id']] = $destination + $parts;
     }
   }
 
@@ -103,6 +113,7 @@ function backup_migrate_backup_migrate_destinations() {
   require_once './'. drupal_get_path('module', 'backup_migrate') .'/includes/destinations.file.inc';
   $out = array();
 
+  // Upload is scheduled backup only.
   $out[] = array(
     'destination_id' => 'upload',
     'name' => t("Upload"),
@@ -110,13 +121,30 @@ function backup_migrate_backup_migrate_destinations() {
     'ops' => array('restore'),
   );
 
-  // Manual backup only destinations
+  // Download is manual backup only.
   $out[] = array(
     'destination_id' => 'download',
     'name' => t("Download"),
     'type' => 'browser',
     'ops' => array('manual backup'),
   );
+
+  // Expose the configured databases as sources.
+  global $db_url;
+  $urls = is_array($db_url) ? $db_url : array('default' => $db_url);
+  foreach ((array)$urls as $key => $url) {
+    $url_parts = _backup_migrate_destination_parse_url($url);
+    $location = _backup_migrate_destination_glue_url($url_parts);
+    $out[] = array(
+      'destination_id' => 'db_url:'.$key,
+      'name' => ($key == 'default' ? t("Default Database") : ($key .": ". $location)),
+      'type' => 'db',
+      'location' => $location,
+      'password' => $url_parts['pass'],
+      'conf_callback' => '',
+      'ops' => array('source'),
+    );
+  }
 
   // Manual backup only destinations
   if ($location = _backup_migrate_check_destination_dir('manual')) {
@@ -613,6 +641,33 @@ function _backup_migrate_destination_get_file_links($destination_id, $file_id) {
       $out[] = l(t("Delete..."), "admin/content/backup_migrate/destination/deletefile/". $destination_id .'/'. $file_id);
     }
   }
+  return $out;
+}
+
+/**
+ * Break a URL into it's component parts.
+ */
+function _backup_migrate_destination_parse_url($url) {
+  $out = (array)parse_url($url);
+  $out['path'] = ltrim($out['path'], "/");
+  return $out;
+}
+
+/**
+ * Glue a URLs component parts back into a URL.
+ */
+function _backup_migrate_destination_glue_url($parts, $hide_password = TRUE) {
+  // Obscure the password if we need to.
+  $password = ($hide_password ? str_repeat("*", drupal_strlen($parts['password'])) : $parts['password']);
+
+  // Assemble the URL.
+  $out = "";
+  $out .= $parts['scheme'] .'://';
+  $out .= $parts['user'] ? $parts['user'] : '';
+  $out .= ($parts['user'] && $parts['password']) ? ":". $password : '';
+  $out .= ($parts['user'] || $parts['password']) ? "@" : "";
+  $out .= $parts['host'];
+  $out .= "/". $parts['path'];
   return $out;
 }
 
