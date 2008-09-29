@@ -84,9 +84,6 @@ function backup_migrate_destination_db_conf_validate($form_id, $form_values) {
   if (!preg_match('/[a-zA-Z0-9_\$]+/', $form_values['path'])) {
     form_set_error('path', t('The database name is not valid.'));
   }
-  if (!$form_values['password'] && !$form_values['old_password']) {
-    form_set_error('password', t('You must enter a password.'));
-  }
 }
 
 /**
