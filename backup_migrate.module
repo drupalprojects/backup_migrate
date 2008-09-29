@@ -25,8 +25,6 @@ function backup_migrate_menu() {
   $items['admin/content/backup_migrate/export'] = array(
     'title' => t('Backup/Export DB'),
     'description' => t('Backup the database.'),
-    'page callback' => '_backup_migrate_export',
-    'access arguments' => array('perform backup'),
     'weight' => 0,
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
