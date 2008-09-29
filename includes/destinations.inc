@@ -403,7 +403,7 @@ function backup_migrate_ui_destination_create($type = NULL) {
 
   // If a valid type has been specified, present a form
   if (isset($types[$type])) {
-    $destination = array('type' => $type, 'name' => "Untitled Destination") + $types[$type];
+    $destination = array('type' => $type, 'name' => t("Untitled Destination")) + $types[$type];
     $output = drupal_get_form('backup_migrate_ui_destination_configure_form', $destination);
   }
   else {
