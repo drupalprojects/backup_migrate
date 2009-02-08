@@ -499,7 +499,6 @@ function _backup_migrate_dump_tables($filename, $exclude_tables, $nodata_tables,
     $filename .= "-". date($append_timestamp);
   }
   $filename = _backup_migrate_clean_filename($filename);
-
   // Dump the database.
   $temp_file = _backup_migrate_temp_file();
   switch ($type) {
@@ -592,14 +591,12 @@ function _backup_migrate_send_file_to_download($filename, $filetype, $file_path)
  */
 function _backup_migrate_get_dump_sql($file, $exclude_tables, $nodata_tables) {
   if ($dst = fopen($file, "w")) {
-    $exclude = variable_get("backup_migrate_exclude_tables", _backup_migrate_default_exclude_tables());
-    $nodata = variable_get("backup_migrate_nodata_tables", _backup_migrate_default_structure_only_tables());
     fwrite($dst, _backup_migrate_get_sql_file_header());
     $alltables = _backup_migrate_get_tables();
     foreach ($alltables as $table) {
-      if ($table['Name'] && !isset($exclude[$table['Name']])) {
+      if ($table['Name'] && !isset($exclude_tables[$table['Name']])) {
         fwrite($dst, _backup_migrate_get_table_structure_sql($table));
-        if (!in_array($table['Name'], $nodata)) {
+        if (!in_array($table['Name'], $nodata_tables)) {
           _backup_migrate_dump_table_data_sql_to_handle($dst, $table);
         }
       }
@@ -831,6 +828,9 @@ function _backup_migrate_restore_file($filepath, $filename = "", $delete = FALSE
   else {
     drupal_set_message(t("Unable to open file %file to restore database", array("%file" => $filepath)), 'error');
   }
+
+  // Release cron semaphore that was set during scheduled backup.
+  variable_del('cron_semaphore');
 
   // Delete any temp files we've created.
   _backup_migrate_temp_file("", TRUE);
@@ -1064,51 +1064,53 @@ function _backup_migrate_check_destination_dir($mode = "") {
     return FALSE;
   }
 
-  // Check for a htaccess file which adequately protects the backup files.
-  $htaccess_lines = "order allow,deny\ndeny from all\n";
-  if (!is_file($directory .'/.htaccess') || strpos(file_get_contents($directory .'/.htaccess'), $htaccess_lines) === FALSE) {
-    // Attempt to protect the backup files from public access using htaccess.
-    if (($fp = @fopen($directory .'/.htaccess', 'w')) && @fputs($fp, $htaccess_lines)) {
-      fclose($fp);
-      chmod($directory .'/.htaccess', 0664);
+  if (strtolower(substr(realpath($directory), 0, strlen($_SERVER['DOCUMENT_ROOT']))) === strtolower($_SERVER['DOCUMENT_ROOT'])) {
+    // Check for a htaccess file which adequately protects the backup files.
+    $htaccess_lines = "order allow,deny\ndeny from all\n";
+    if (!is_file($directory .'/.htaccess') || strpos(file_get_contents($directory .'/.htaccess'), $htaccess_lines) === FALSE) {
+      // Attempt to protect the backup files from public access using htaccess.
+      if (($fp = @fopen($directory .'/.htaccess', 'w')) && @fputs($fp, $htaccess_lines)) {
+        fclose($fp);
+        chmod($directory .'/.htaccess', 0664);
+      }
+      // Unable to create htaccess... warn the user.
+      else {
+        $message = "Security warning: Couldn't modify .htaccess file. Please create a .htaccess file in your %directory directory which contains the following lines: <code>!htaccess</code> or add them to the existing .htaccess file";
+        $replace = array('%directory' => $directory, '!htaccess' => '<br />'. nl2br(check_plain($htaccess_lines)));
+        drupal_set_message(t($message, $replace), "error");
+        watchdog('security', t($message, $replace), WATCHDOG_ERROR);
+        return FALSE;
+      }
     }
-    // Unable to create htaccess... warn the user.
-    else {
-      $message = "Security warning: Couldn't modify .htaccess file. Please create a .htaccess file in your %directory directory which contains the following lines: <code>!htaccess</code> or add them to the existing .htaccess file";
-      $replace = array('%directory' => $directory, '!htaccess' => '<br />'. nl2br(check_plain($htaccess_lines)));
-      drupal_set_message(t($message, $replace), "error");
-      watchdog('security', t($message, $replace), WATCHDOG_ERROR);
+  
+    // Check the user agent to make sure we're not responding to a request from drupal itself.
+    // That should prevent infinite loops which could be caused by poormanscron in some circumstances.
+    if (strpos($_SERVER['HTTP_USER_AGENT'], 'Drupal') !== FALSE) {
       return FALSE;
     }
-  }
-
-  // Check the user agent to make sure we're not responding to a request from drupal itself.
-  // That should prevent infinite loops which could be caused by poormanscron in some circumstances.
-  if (strpos($_SERVER['HTTP_USER_AGENT'], 'Drupal') !== FALSE) {
-    return FALSE;
-  }
-
-  // Check to see if the destination is publicly accessible
-  $test_contents = "this file should not be publicly accesible";
-  // Create the the text.txt file if it's not already there.
-  if (!is_file($subdir .'/test.txt') || file_get_contents($subdir .'/test.txt') != $test_contents) {
-    if ($fp = fopen($subdir .'/test.txt', 'w')) {
-      @fputs($fp, $test_contents);
-      fclose($fp);
+  
+    // Check to see if the destination is publicly accessible
+    $test_contents = "this file should not be publicly accesible";
+    // Create the the text.txt file if it's not already there.
+    if (!is_file($subdir .'/test.txt') || file_get_contents($subdir .'/test.txt') != $test_contents) {
+      if ($fp = fopen($subdir .'/test.txt', 'w')) {
+        @fputs($fp, $test_contents);
+        fclose($fp);
+      }
+      else {
+        $message = t("Security notice: Backup and Migrate was unable to write a test text file to the destination directory %directory, and is therefore unable to check the security of the backup destination. Backups to the server will be disabled until the destination becomes writable and secure.", array('%directory' => $directory));
+        drupal_set_message($message, "error");
+        return FALSE;
+      }
     }
-    else {
-      $message = t("Security notice: Backup and Migrate was unable to write a test text file to the destination directory %directory, and is therefore unable to check the security of the backup destination. Backups to the server will be disabled until the destination becomes writable and secure.", array('%directory' => $directory));
+  
+    // Attempt to read the test file via http. This may fail for other reasons, so it's not a bullet-proof check.
+    $path = trim(substr($subdir .'/test.txt', strlen(file_directory_path())), '\\/');
+    if (_backup_migrate_test_file_readable_remotely($path, $contents)) {
+      $message = t("Security notice: Backup and Migrate will not save backup files to the server because the destination directory is publicly accessible. If you want to save files to the server, please secure the '%directory' directory", array('%directory' => $directory));
       drupal_set_message($message, "error");
       return FALSE;
     }
-  }
-
-  // Attempt to read the test file via http. This may fail for other reasons, so it's not a bullet-proof check.
-  $path = trim(substr($subdir .'/test.txt', strlen(file_directory_path())), '\\/');
-  if (_backup_migrate_test_file_readable_remotely($path, $contents)) {
-    $message = t("Security notice: Backup and Migrate will not save backup files to the server because the destination directory is publicly accessible. If you want to save files to the server, please secure the '%directory' directory", array('%directory' => $directory));
-    drupal_set_message($message, "error");
-    return FALSE;
   }
 
   return $out;
