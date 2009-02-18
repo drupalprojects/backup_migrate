@@ -176,7 +176,9 @@ function backup_migrate_delete_confirm_submit($form, &$form_state) {
     file_delete($path);
   }
   watchdog('backup_migrate', 'Database backup file deleted: %file', array('%file' => $path));
-  $form_state['redirect'] = user_access('access backup files') ? "admin/content/backup_migrate/files" : "admin/content/backup_migrate";
+
+  $redir = strpos($path, '/scheduled/') ? 'admin/content/backup_migrate/files/scheduled' : 'admin/content/backup_migrate/files';
+  $form_state['redirect'] = user_access('access backup files') ? $redir : "admin/content/backup_migrate";
 }
 
 /**
