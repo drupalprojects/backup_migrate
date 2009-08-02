@@ -133,14 +133,6 @@ function backup_migrate_cron() {
 }
 
 /**
- * Implementation of hook_exit().
- */
-function backup_migrate_exit() {
-  // Delete any temporary files generated during this execution.
-  _backup_migrate_temp_file('', TRUE);
-}
-
-/**
  * Implementation of hook_perm().
  */
 function backup_migrate_perm() {
