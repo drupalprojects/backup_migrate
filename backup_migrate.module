@@ -15,22 +15,22 @@ function backup_migrate_menu() {
   $items = array();
 
   $items['admin/content/backup_migrate'] = array(
-    'title' => t('Backup and Migrate'),
-    'description' => t('Backup/restore your database or migrate data to or from another Drupal site.'),
+    'title' => 'Backup and Migrate',
+    'description' => 'Backup/restore your database or migrate data to or from another Drupal site.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('backup_migrate_backup'),
     'access arguments' => array('perform backup'),
     'type' => MENU_NORMAL_ITEM,
   );
   $items['admin/content/backup_migrate/export'] = array(
-    'title' => t('Backup/Export DB'),
+    'title' => 'Backup/Export DB',
     'description' => t('Backup the database.'),
     'weight' => 0,
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
   $items['admin/content/backup_migrate/restore'] = array(
-    'title' => t('Restore/Import DB'),
-    'description' => t('Restore the database from a previous backup'),
+    'title' => 'Restore/Import DB',
+    'description' => 'Restore the database from a previous backup',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('backup_migrate_restore'),
     'access arguments' => array('restore from backup'),
@@ -38,15 +38,15 @@ function backup_migrate_menu() {
     'type' => MENU_LOCAL_TASK,
   );
   $items['admin/content/backup_migrate/files'] = array(
-    'title' => t('Saved Backups'),
-    'description' => t('View existing backup files'),
+    'title' => 'Saved Backups',
+    'description' => 'View existing backup files',
     'page callback' => '_backup_migrate_list_files',
     'access arguments' => array('access backup files'),
     'weight' => 2,
     'type' => MENU_LOCAL_TASK,
   );
   $items['admin/content/backup_migrate/files/manual'] = array(
-    'title' => t('Manual Backups'),
+    'title' => 'Manual Backups',
     'page callback' => '_backup_migrate_list_files',
     'page arguments' => array('manual'),
     'access arguments' => array('access backup files'),
@@ -54,7 +54,7 @@ function backup_migrate_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
   );
   $items['admin/content/backup_migrate/files/scheduled'] = array(
-    'title' => t('Scheduled Backups'),
+    'title' => 'Scheduled Backups',
     'page callback' => '_backup_migrate_list_files',
     'page arguments' => array('scheduled'),
     'access arguments' => array('access backup files'),
@@ -62,8 +62,8 @@ function backup_migrate_menu() {
     'type' => MENU_LOCAL_TASK,
   );
   $items['admin/content/backup_migrate/schedule'] = array(
-    'title' => t('Backup Schedule'),
-    'description' => t('View existing backup files'),
+    'title' => 'Backup Schedule',
+    'description' => 'View existing backup files',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('backup_migrate_schedule'),
     'access arguments' => array('access backup files'),
@@ -71,15 +71,15 @@ function backup_migrate_menu() {
     'type' => MENU_LOCAL_TASK,
   );
   $items['admin/content/backup_migrate/restorefile'] = array(
-    'title' => t('restore from backup'),
-    'description' => t('Restore database from a backup file on the server'),
+    'title' => 'restore from backup',
+    'description' => 'Restore database from a backup file on the server',
     'page callback' => '_backup_migrate_restore_from_server',
     'access arguments' => array('restore from backup'),
     'type' => MENU_CALLBACK,
   );
   $items['admin/content/backup_migrate/delete'] = array(
-    'title' => t('Delete File'),
-    'description' => t('Delete a backup file'),
+    'title' => 'Delete File',
+    'description' => 'Delete a backup file',
     'page callback' => '_backup_migrate_delete',
     'access arguments' => array('delete backup files'),
     'type' => MENU_CALLBACK,
