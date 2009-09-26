@@ -126,7 +126,7 @@ function backup_migrate_cron() {
 
   // Delete temp files abandoned for 6 or more hours.
   $dir = file_directory_temp();
-  $expire = time() - variable_get('backup_migrate_cleanup_time', 0);
+  $expire = time() - variable_get('backup_migrate_cleanup_time', 21600);
   if (file_exists($dir) && is_dir($dir) && is_readable($dir) && $handle = opendir($dir)) {
     while (FALSE !== ($file = @readdir($handle))) {
       // Delete 'backup_migrate_' files in the temp directory that are older than the expire time.
