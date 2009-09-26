@@ -125,10 +125,18 @@ function backup_migrate_cron() {
   }
 
   // Delete temp files abandoned for 6 or more hours.
-  foreach (file_scan_directory(file_directory_temp(), 'backup_migrate_*', array('.', '..'), 0, FALSE) as $file) {
-    if (filectime($file->filename) < time() - 21600) {
-      unlink($file->filename);
+  $dir = file_directory_temp();
+  $expire = time() - variable_get('backup_migrate_cleanup_time', 0);
+  if (file_exists($dir) && is_dir($dir) && is_readable($dir) && $handle = opendir($dir)) {
+    while (FALSE !== ($file = @readdir($handle))) {
+      // Delete 'backup_migrate_' files in the temp directory that are older than the expire time.
+      // We should only attempt to delete writable files to prevent errors in shared environments.
+      // This could still cause issues in shared environments with poorly configured file permissions.
+      if (strpos($file, 'backup_migrate_') === 0 && is_writable("$dir/$file") && @filectime("$dir/$file") < $expire) {
+        unlink("$dir/$file");
+      }
     }
+    closedir($handle);
   }
 }
 
