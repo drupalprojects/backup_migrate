@@ -1,4 +1,0 @@
-; $Id$
-name = Backup and Migrate
-description = "Backup or migrate the Drupal Database quickly and without unnecessary data."
-core = 6.x
