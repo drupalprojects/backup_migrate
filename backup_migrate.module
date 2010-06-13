@@ -478,7 +478,7 @@ function _backup_migrate_backup_with_defaults($mode = "manual") {
  * Build the database dump file. Takes a list of tables to exclude and some formatting options.
  */
 function _backup_migrate_dump_tables($filename, $exclude_tables, $nodata_tables, $type = "sql", $destination = "download", $compression = "none", $mode = "manual", $append_timestamp = FALSE) {
-  $file_mime = "text/plain";
+  $filemime = "text/plain";
   $success = FALSE;
 
   if ($append_timestamp) {
@@ -536,7 +536,7 @@ function _backup_migrate_dump_tables($filename, $exclude_tables, $nodata_tables,
         break;
 
       case "download":
-        _backup_migrate_send_file_to_download($filename, $file_mime, $temp_file);
+        _backup_migrate_send_file_to_download($filename, $filemime, $temp_file);
         break;
     }
   }
@@ -1049,7 +1049,6 @@ function _backup_migrate_check_destination_dir($mode = "") {
 
   // Create subdir if needed.
   if (($subdir != $directory) && !file_check_directory($subdir, TRUE)) {
-  var_dump('checking');
     // Unable to create sub directory.
     $message = t("Unable to create or write to the save directory '%directory'. Please check the file permissions on your files directory.", array('%directory' => $subdir));
     drupal_set_message($message, "error");
