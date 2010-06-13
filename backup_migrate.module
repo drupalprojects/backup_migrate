@@ -498,7 +498,7 @@ function _backup_migrate_backup_with_defaults($mode = "manual") {
  * Build the database dump file. Takes a list of tables to exclude and some formatting options.
  */
 function _backup_migrate_dump_tables($filename, $exclude_tables, $nodata_tables, $type = "sql", $destination = "download", $compression = "none", $mode = "manual", $append_timestamp = FALSE) {
-  $file_mime = "text/plain";
+  $filemime = "text/plain";
   $success = FALSE;
 
   if ($append_timestamp) {
@@ -556,7 +556,7 @@ function _backup_migrate_dump_tables($filename, $exclude_tables, $nodata_tables,
         break;
 
       case "download":
-        _backup_migrate_send_file_to_download($filename, $file_mime, $temp_file);
+        _backup_migrate_send_file_to_download($filename, $filemime, $temp_file);
         break;
     }
   }
