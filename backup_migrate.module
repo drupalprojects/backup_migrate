@@ -107,6 +107,12 @@ function backup_migrate_menu($may_cache) {
  * Takes care of scheduled backups.
  */
 function backup_migrate_cron() {
+  // Backing up requires a full bootstrap as it uses the file functionality in 
+  // files.inc. Running poormanscron with caching on can cause cron to run without
+  // a full bootstrap so we manually finish bootstrapping here.
+  require_once './includes/common.inc';
+  _drupal_bootstrap_full();
+
   if ($backup_schedule_period = variable_get("backup_migrate_schedule_backup_period", 0)) {
     $last_backup = variable_get("backup_migrate_schedule_last_backup", 0);
     $now = time();
@@ -132,19 +138,19 @@ function backup_migrate_cron() {
   }
 
   // Delete temp files abandoned for 6 or more hours.
-  foreach (file_scan_directory(file_directory_temp(), 'backup_migrate_*', array('.', '..'), 0, FALSE) as $file) {
-    if (filectime($file->filename) < time() - 21600) {
-      unlink($file->filename);
+  $dir = file_directory_temp();
+  $expire = time() - variable_get('backup_migrate_cleanup_time', 21600);
+  if (file_exists($dir) && is_dir($dir) && is_readable($dir) && $handle = opendir($dir)) {
+    while (FALSE !== ($file = @readdir($handle))) {
+      // Delete 'backup_migrate_' files in the temp directory that are older than the expire time.
+      // We should only attempt to delete writable files to prevent errors in shared environments.
+      // This could still cause issues in shared environments with poorly configured file permissions.
+      if (strpos($file, 'backup_migrate_') === 0 && is_writable("$dir/$file") && @filectime("$dir/$file") < $expire) {
+        unlink("$dir/$file");
+      }
     }
+    closedir($handle);
   }
-}
-
-/**
- * Implementation of hook_exit().
- */
-function backup_migrate_exit() {
-  // Delete any temporary files generated during this execution.
-  _backup_migrate_temp_file('', TRUE);
 }
 
 /**
@@ -499,6 +505,7 @@ function _backup_migrate_dump_tables($filename, $exclude_tables, $nodata_tables,
     $filename .= "-". date($append_timestamp);
   }
   $filename = _backup_migrate_clean_filename($filename);
+
   // Dump the database.
   $temp_file = _backup_migrate_temp_file();
   switch ($type) {
@@ -578,7 +585,7 @@ function _backup_migrate_send_file_to_download($filename, $filetype, $file_path)
   // Delete any temporary files we've created.
   _backup_migrate_temp_file("", TRUE);
 
-  watchdog('backup_migrate', t('Database backup file'));
+  watchdog('backup_migrate', 'Database backup downloaded');
 
   module_invoke_all('exit');
   exit();
@@ -609,6 +616,7 @@ function _backup_migrate_get_dump_sql($file, $exclude_tables, $nodata_tables) {
     return FALSE;
   }
 }
+
 
 /**
  * Get the sql for the structure of the given table.
@@ -1064,6 +1072,7 @@ function _backup_migrate_check_destination_dir($mode = "") {
     return FALSE;
   }
 
+  // If the files are saved inside the webroot (ie: may be web-accesible).
   if (strtolower(substr(realpath($directory), 0, strlen($_SERVER['DOCUMENT_ROOT']))) === strtolower($_SERVER['DOCUMENT_ROOT'])) {
     // Check for a htaccess file which adequately protects the backup files.
     $htaccess_lines = "order allow,deny\ndeny from all\n";
@@ -1112,7 +1121,6 @@ function _backup_migrate_check_destination_dir($mode = "") {
       return FALSE;
     }
   }
-
   return $out;
 }
 
