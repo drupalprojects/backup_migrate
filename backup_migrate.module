@@ -1128,7 +1128,7 @@ function backup_migrate_ui_manual_restore_form() {
   if (user_access('access backup files')) {
     $form[] = array(
       '#type' => 'markup',
-      '#value' => t('<p>Or you can restore one of your <a href="!url">previously saved bacups.</a></p>', array("!url" => url("admin/content/backup_migrate/backups"))),
+      '#value' => t('<p>Or you can restore one of your <a href="!url">previously saved backups.</a></p>', array("!url" => url("admin/content/backup_migrate/backups"))),
     );
   }
   $form['#attributes'] = array('enctype' => 'multipart/form-data');
