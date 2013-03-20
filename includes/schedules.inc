@@ -266,10 +266,14 @@ class backup_migrate_schedule extends backup_migrate_item {
     if ($settings = backup_migrate_get_profile($this->get('profile_id'))) {
       $settings->file_info = empty($settings->file_info) ? array() : $settings->file_info;
       $settings->file_info += array(
-        'schedule_id'   => $this->get_id(),
-        'schedule_name' => $this->get('name'),
+        'bam_scheduleid'   => $this->get_id(),
+        'bam_schedulename' => $this->get('name'),
+        'bam_scheduletype' => $this->get('cron'),
+        'bam_schedulefrequency' => $this->get('cron') == BACKUP_MIGRATE_CRON_BUILTIN ? $this->period : '',
+        'bam_schedulefreqdesc' => $this->get_frequency_description(),
       );      
     }
+
     return $settings;
 
   }
