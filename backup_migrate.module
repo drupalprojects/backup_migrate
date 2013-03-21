@@ -85,7 +85,7 @@ function backup_migrate_help($section, $arg) {
     $out = "";
     foreach ($help as $key => $section) {
       if (isset($section['access arguments'])) {
-        foreach($section['access arguments'] as $access) {
+        foreach ($section['access arguments'] as $access) {
           if (!user_access($access)) {
             continue 2;
           }
@@ -526,7 +526,7 @@ function backup_migrate_ui_schedule_form(&$form_state, $sources, $schedules) {
 
       $form['quickschedule'][$key]['enabled'] = array(
         '#type' => 'checkbox',
-        '#title' => t('Automatically backup my !source', array('!source' => $source->get('name'))),
+        '#title' => t('Automatically backup my @source', array('@source' => $source->get('name'))),
         '#default_value' => $schedule->get('enabled'),
       );
       /*
@@ -594,7 +594,7 @@ function backup_migrate_ui_schedule_form(&$form_state, $sources, $schedules) {
         '#value' => l(t('Advanced Settings.'), BACKUP_MIGRATE_MENU_PATH . '/settings/schedule/edit/' . $id, array('query' => drupal_get_destination())),
       );
       // Set the parent for the setttings up a level.
-      foreach(element_children($form['quickschedule'][$key]['settings']) as $child) {
+      foreach (element_children($form['quickschedule'][$key]['settings']) as $child) {
         $form['quickschedule'][$key]['settings'][$child]['#parents'] = array('quickschedule', $key, $child);
       }
     }
@@ -1117,8 +1117,8 @@ function backup_migrate_ui_manual_restore_form() {
   if (@$form['advanced']) {
     $form['advanced']['#type'] = 'fieldset';
     $form['advanced']['#title'] = t('Advanced Options');
-    $form['advanced']['#collapsed'] = true;
-    $form['advanced']['#collapsible'] = true;
+    $form['advanced']['#collapsed'] = TRUE;
+    $form['advanced']['#collapsible'] = TRUE;
   }
 
   $form['submit'] = array(
@@ -1165,7 +1165,7 @@ function backup_migrate_ui_saved_backups() {
   backup_migrate_include('profiles', 'destinations', 'sources');
   drupal_add_css(drupal_get_path('module', 'backup_migrate') .'/backup_migrate.css');
 
-  $remote = false;
+  $remote = FALSE;
   $now = $fetch_time = time();
   $out = '';
   $files = array();
@@ -1574,7 +1574,7 @@ function _backup_migrate_check_timeout() {
 
   // Max execution of 0 means unlimited.
   if (ini_get('max_execution_time') == 0) {
-    return false;
+    return FALSE;
   }
   // Figure out when we should stop execution.
   if (!$timeout) {
