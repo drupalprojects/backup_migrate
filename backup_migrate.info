@@ -1,3 +1,4 @@
 name = Backup and Migrate
 description = "Backup the Drupal database and files or migrate them to another environment."
 core = 6.x
+  

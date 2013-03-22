@@ -619,7 +619,8 @@ function backup_migrate_ui_schedule_form_submit($form, &$form_state) {
   backup_migrate_include('schedules');
   if (user_access('adminsiter backup and migrate')) {
     // Override the backups.
-    foreach ($form_state['values']['quickschedule'] as $id => $values) {
+    foreach ($form_state['values']['quickschedule'] as $key => $values) {
+      $id = $values['id'];
       if ($schedule = backup_migrate_get_schedule($id)) {
         $schedule->from_array($values);
         $schedule->save();

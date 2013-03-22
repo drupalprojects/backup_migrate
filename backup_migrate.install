@@ -192,12 +192,6 @@ function backup_migrate_schema() {
         'default' => 0,
         'description' => t('The number of seconds between backups.'),
       ),
-      'last_run' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => t('The last time the backup was run.'),
-      ),
       'enabled' => array(
         'description' => t('Whether the schedule is enabled.'),
         'type' => 'int',
