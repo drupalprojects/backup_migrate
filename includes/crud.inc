@@ -131,8 +131,10 @@ function backup_migrate_crud_create($type, $subtype = NULL) {
 function backup_migrate_crud_menu() {
   $items = array();
   foreach (backup_migrate_crud_types() as $type => $info) {
-    $type = backup_migrate_crud_type_load($type);
-    $items += (array)$type->get_menu_items();
+    foreach (backup_migrate_crud_subtypes($type) as $subtype => $info) {
+      $subtype = backup_migrate_crud_type_load($type, $subtype);
+      $items += (array)$subtype->get_menu_items();
+    }
   }
   return $items;
 }
@@ -737,7 +739,8 @@ class backup_migrate_item {
     );
     $form['actions'] = array('#prefix' => '<div class="container-inline">', '#suffix' => '</div>', '#weight' => 99);
     $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Save !type', array('!type' => t($this->singular))));
-    $form['actions']['cancel'] = array('#value' => l(t('Cancel'), $this->get_settings_path()));
+    $cancel_url = isset($_GET['destination']) ? $_GET['destination'] : $this->get_settings_path();
+    $form['actions']['cancel'] = array('#value' => l(t('Cancel'), $cancel_url));
     return $form;
   }
 

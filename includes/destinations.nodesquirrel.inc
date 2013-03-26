@@ -7,6 +7,8 @@
 
 define('NODESQUIRREL_SECRET_KEY_PATTERN', '/^[0-9a-f]{32}\:?[0-9a-f]{32}$/');
 
+backup_migrate_include('destinations');
+
 /**
  * Check that a nodesquirel key is valid.
  */
@@ -63,14 +65,6 @@ function nodesquirrel_get_manage_link($destination) {
 }
 
 /**
- * Get the path to the nodesquirrel settings tab.
- */
-function nodesquirrel_settings_path() {
-  $path = BACKUP_MIGRATE_MENU_PATH . '/settings/destinations/nodesquirrel/edit';
-  return $path;
-}
-
-/**
  * NodeSquirrel settings form.
  */
 function backup_migrate_nodesquirrel_credentials_settings_form($key = '') {
@@ -92,9 +86,16 @@ function backup_migrate_nodesquirrel_credentials_settings_form($key = '') {
 }
 
 /**
+ * NodeSquirrel settings page callback.
+ */
+function backup_migrate_nodesquirrel_settings() {
+  return drupal_get_form('backup_migrate_nodesquirrel_settings_form');
+}
+
+/**
  * NodeSquirrel settings form.
  */
-function backup_migrate_nodesquirrel_settings($form_state) {
+function backup_migrate_nodesquirrel_settings_form($form_state) {
   _backup_migrate_message_callback('_backup_migrate_message_browser');
 
   $form = array();
@@ -124,35 +125,9 @@ function backup_migrate_nodesquirrel_settings($form_state) {
       '#description' => t('You can use the NodeSquirrel management console to add and edit your sites, reset your secret key, download and delete backups, and modify your NodeSquirrel account.'),
     );
     $form['nodesquirrel_status']['status']['#value'] = t('Ready to Backup');
-    if (user_access('perform backup')) {
-      $form['nodesquirrel_status']['status']['#value'] .= ' ' . l('(' . t('backup now') . ')', nodesquirrel_settings_path());
-    }
   }
 
   $form += backup_migrate_nodesquirrel_credentials_settings_form($key);
-
-  $schedule = variable_get('nodesquirrel_schedule', 60*60*24);
-  $form['nodesquirrel_schedule'] = array(
-    '#type' => 'select',
-    '#title' => t('Automatic Backups'),
-    '#options' => array(
-      ''            => t('- None - '),
-      (60*60)       => t('Hourly'),
-      (60*60*24)    => t('Daily'),
-      (60*60*24*7)  => t('Weekly'),
-    ),
-    '#default_value' => variable_get('nodesquirrel_schedule', 60*60*24),
-    '#description' => t('Set up a schedule to back up to NodeSquirrel. You can customize this schedule in the !schedule. Not seeing your automatic backups? Make sure !cron is set to run at the same frequency or higher.', array('!schedule' => l(t('Schedules tab'), nodesquirrel_settings_path() . '/schedule'), '!cron' => l(t('cron'), 'http://drupal.org/cron'))),
-  );
-
-  // If the schedule has been overriden it must be edited in the schedule tab.
-  backup_migrate_include('crud');
-  $item = backup_migrate_crud_get_item('schedule', 'nodesquirrel');
-  if ($item && $item->storage == BACKUP_MIGRATE_STORAGE_OVERRIDEN) {
-    $form['nodesquirrel_schedule']['#options'] = array('' => t('- Overriden -'));
-    $form['nodesquirrel_schedule']['#disabled'] = TRUE;
-    $form['nodesquirrel_schedule']['#description'] = t('Your NodeSquirrel schedule has been overriden and must be edited in the !schedule.', array('!schedule' => l(t('Schedules tab'), nodesquirrel_settings_path() . '/schedule/list/edit/nodesquirrel')));
-  }
 
   return system_settings_form($form);
 }

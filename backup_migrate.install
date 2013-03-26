@@ -464,6 +464,13 @@ function backup_migrate_update_6300() {
       'query' => 'Disabled the Backup and Migrate Files module',
     );
   }
+  if (module_exists('nodesquirrel')) {
+    module_disable(array('nodesquirrel'));
+    $ret[] = array(
+      'success' => true,
+      'query' => 'Disabled the NodeSquirrel module',
+    );
+  }
 
   // Add sources to the schema.
   $schema['backup_migrate_sources'] = array(

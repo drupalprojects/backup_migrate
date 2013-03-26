@@ -32,7 +32,7 @@ function backup_migrate_backup_migrate_schedule_types() {
   $out = array();
   $out += array(
     'backup' => array(
-      'include' => 'schedule',
+      'include' => 'schedules',
       'type_name' => t('Backup Schedule'),
       'class' => 'backup_migrate_schedule',
     ),
