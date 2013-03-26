@@ -90,7 +90,7 @@ class backup_migrate_filter_backup_restore extends backup_migrate_filter {
       '#tree' => TRUE,
     ));
     foreach (backup_migrate_get_sources()  as $source) {
-      $source_settings = (array)(@$settings['destinations'][$source->get_id()]) + $settings;
+      $source_settings = (array)(@$settings['sources'][$source->get_id()]) + $settings;
       if ($form = $source->backup_settings_form($source_settings)) {
         $out['destinations'][$source->get_id()] = array(
           '#type' => 'fieldset',
