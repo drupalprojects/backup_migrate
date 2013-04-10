@@ -63,7 +63,7 @@ function backup_migrate_crud_subtypes($type) {
       $function =  $module . '_backup_migrate_' . $type . '_types';
       $result = $function();
       if (isset($result) && is_array($result)) {
-        foreach ($result as $key => $val) {
+      foreach ($result as $key => $val) {
           $out[$key] = $val;
         }
       }
@@ -167,7 +167,7 @@ function backup_migrate_crud_ui_list_all() {
   $out = '';
   foreach (backup_migrate_crud_types() as $type => $info) {
     $type = backup_migrate_crud_type_load($type);
-    $out[] = theme('box', t(ucwords($type->plural)), $type->get_list());
+    $out[] = theme('backup_migrate_group', $type->title_plural, $type->get_list());
   }
   return implode('', $out);
 }
@@ -329,7 +329,7 @@ function backup_migrate_crud_import_form_validate($form, &$form_state) {
 function backup_migrate_crud_import_form_submit($form, &$form_state) {
   $item = $form_state['values']['item'];
   $item->save();
-  _backup_migrate_message('!type imported', array('!type' => t(ucwords($item->singular))));
+  _backup_migrate_message('Your !type was imported', array('!type' => t($item->singular)));
   $form_state['redirect'] = $item->get_settings_path();
 }
 
@@ -393,6 +393,27 @@ class backup_migrate_item {
   var $default_values = array();
   var $singular = 'item';
   var $plural = 'items';
+  var $title_plural = 'Items';
+  var $title_singular = 'Item';
+
+  /**
+   * This function is not supposed to be called. It is just here to help the po extractor out.
+   */
+  function strings() {
+    // Help the pot extractor find these strings.
+    t('item');
+    t('items');
+    t('Items');
+    t('Item');
+
+    // Help the pot extractor find these strings.
+    t('List !type');
+    t('Create !type');
+    t('Delete !type');
+    t('Edit !type');
+    t('Export !type');
+  }
+
 
   /**
    * Constructor, set the basic info pulled from the db or generated programatically.
@@ -756,7 +777,7 @@ class backup_migrate_item {
   function edit_form_submit($form, &$form_state) {
     $this->from_array($form_state['values']);
     $this->save();
-    _backup_migrate_message('!type saved', array('!type' => t(ucwords($this->singular))));
+    _backup_migrate_message('Your !type was saved', array('!type' => t($this->singular)));
   }
 
   /**
@@ -775,18 +796,6 @@ class backup_migrate_item {
 
   /* Static Functions */ 
   /**
-   * This function is not supposed to be called. It is just here to help the po extractor out.
-   */
-  function strings() {
-    // Help the pot extractor find these strings.
-    t('List !type');
-    t('Create !type');
-    t('Delete !type');
-    t('Edit !type');
-    t('Export !type');
-  }
-
-  /**
    * Get the menu items for manipulating this type.
    */
   function get_menu_items() {
@@ -794,7 +803,7 @@ class backup_migrate_item {
 
     $type = $this->type_name;
     $items[$path] = array(
-      'title' => ucwords($this->plural),
+      'title' => $this->title_plural,
       'page callback' => 'backup_migrate_menu_callback',
       'page arguments' => array('crud', 'backup_migrate_crud_ui_list', TRUE, $this->type_name),
       'access arguments' => array('administer backup and migrate'),
@@ -803,13 +812,13 @@ class backup_migrate_item {
     );
     $items[$path .'/list'] = array(
       'title' => 'List !type',
-      'title arguments' => array('!type' => t(ucwords($this->plural))),
+      'title arguments' => array('!type' => t($this->title_plural)),
       'weight' => 1,
       'type' => MENU_DEFAULT_LOCAL_TASK,
     );
     $items[$path .'/add'] = array(
       'title' => 'Create !type',
-      'title arguments' => array('!type' => t(ucwords($this->singular))),
+      'title arguments' => array('!type' => t($this->title_singular)),
       'page callback' => 'backup_migrate_menu_callback',
       'page arguments' => array('crud', 'backup_migrate_crud_ui_create', TRUE, $this->type_name),
       'access arguments' => array('administer backup and migrate'),
@@ -818,7 +827,7 @@ class backup_migrate_item {
     );
     $items[$path .'/delete'] = array(
       'title' => 'Delete !type',
-      'title arguments' => array('!type' => t(ucwords($this->singular))),
+      'title arguments' => array('!type' => t($this->title_singular)),
       'page callback' => 'backup_migrate_menu_callback',
       'page arguments' => array('crud', 'backup_migrate_crud_ui_delete', TRUE, $this->type_name),
       'access arguments' => array('administer backup and migrate'),
@@ -826,7 +835,7 @@ class backup_migrate_item {
     );
     $items[$path .'/edit'] = array(
       'title' => 'Edit !type',
-      'title arguments' => array('!type' => t(ucwords($this->singular))),
+      'title arguments' => array('!type' => t($this->title_singular)),
       'page callback' => 'backup_migrate_menu_callback',
       'page arguments' => array('crud', 'backup_migrate_crud_ui_edit', TRUE, $this->type_name),
       'access arguments' => array('administer backup and migrate'),
@@ -834,7 +843,7 @@ class backup_migrate_item {
     );
     $items[$path .'/export'] = array(
       'title' => 'Export !type',
-      'title arguments' => array('!type' => t(ucwords($this->singular))),
+      'title arguments' => array('!type' => t($this->title_singular)),
       'page callback' => 'backup_migrate_menu_callback',
       'page arguments' => array('crud', 'backup_migrate_crud_ui_export', TRUE, $this->type_name),
       'access arguments' => array('administer backup and migrate'),

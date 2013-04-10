@@ -54,6 +54,10 @@ html.js #backup-migrate-ui-manual-quick-backup-form fieldset.collapsed,
   margin-bottom: 1em;
 }
 
+.backup-migrate-group {
+  margin-bottom: 2em;
+}
+
 .backup-migrate-form-dependent {
   padding-left: 2em;
   padding-bottom: 1em;
