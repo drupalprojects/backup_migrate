@@ -226,47 +226,6 @@ function backup_migrate_schema() {
  */
 function backup_migrate_install() {
   drupal_install_schema('backup_migrate');
-  _backup_migrate_setup_database_defaults();
-}
-
-function _backup_migrate_setup_database_defaults() {
-  require_once './'. drupal_get_path('module', 'backup_migrate') .'/backup_migrate.module';
-  require_once './'. drupal_get_path('module', 'backup_migrate') .'/includes/crud.inc';
-  require_once './'. drupal_get_path('module', 'backup_migrate') .'/includes/profiles.inc';
-  require_once './'. drupal_get_path('module', 'backup_migrate') .'/includes/files.inc';
-
-  if (variable_get("backup_migrate_file_name", NULL)) {
-    $settings = array(
-      'profile_id' => 'default',
-      'filename' => variable_get("backup_migrate_file_name", _backup_migrate_default_filename()),
-      'append_timestamp' => variable_get("backup_migrate_append_timestamp", FALSE) ? 1 : 0,
-      'timestamp_format' => variable_get("backup_migrate_timestamp_format", 'Y-m-d\TH-i-s'),
-      'filters' => array(
-        'compression' => variable_get("backup_migrate_compression", "none"),
-        'exclude_tables' => variable_get("backup_migrate_exclude_tables", array()),
-        'nodata_tables' => variable_get("backup_migrate_nodata_tables", array()),
-      ),
-      'name' => t('Default Settings'),
-    );
-    $profile = backup_migrate_crud_create_item('profile', $settings);
-    $profile->save();
-    variable_set("backup_migrate_profile_id", 'default');
-
-    // Set up the default schedules.
-    if (variable_get("backup_migrate_schedule_backup_period", 0)) {
-      require_once './'. drupal_get_path('module', 'backup_migrate') .'/includes/schedules.inc';
-      $schedule = array(
-        'name' => t('Default Schedule'),
-        'profile_id' => $profile->get_id(),
-        'enabled' => 1,
-        'destination_id' => 'scheduled',
-        'period' => array('number' => variable_get("backup_migrate_schedule_backup_period", 0), 'type' => 'hours'),
-        'keep' => variable_get("backup_migrate_schedule_backup_keep", 0),
-      );
-      $schedule = backup_migrate_crud_create_item('schedule', $schedule);
-      $schedule->save();
-    }
-  }
 }
 
 /**
@@ -445,9 +404,6 @@ function backup_migrate_update_6200() {
       variable_set('backup_migrate_schedule_last_run_' . $item['schedule_id'], $item['last_run']);
     }
   }
-  if (db_column_exists('backup_migrate_schedules', 'last_run')) {
-    db_drop_field($ret, 'backup_migrate_schedules', 'last_run');
-  }
   return $ret;
 }
 
@@ -514,6 +470,11 @@ function backup_migrate_update_6300() {
   if (!db_table_exists('backup_migrate_sources')) {
     db_create_table($ret, 'backup_migrate_sources', $schema['backup_migrate_sources']);
   }
+
+  if (db_column_exists('backup_migrate_schedules', 'last_run')) {
+    db_drop_field($ret, 'backup_migrate_schedules', 'last_run');
+  }
+
   // @TODO: Move custom destinations to sources.
 
   return $ret;

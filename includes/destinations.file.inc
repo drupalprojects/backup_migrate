@@ -20,6 +20,13 @@ class backup_migrate_destination_files extends backup_migrate_destination {
   }
 
   /**
+   * Get the file location.
+   */
+  function get_realpath() {
+    return $this->get_location();
+  }
+
+  /**
    * File save destination callback.
    */
   function _save_file($file, $settings) {
@@ -83,7 +90,7 @@ class backup_migrate_destination_files extends backup_migrate_destination {
    */
   function _list_files() {
     $files = array();
-    if ($dir = $this->get_location()) {
+    if ($dir = $this->get_realpath()) {
       if ($handle = @opendir($dir)) {
         backup_migrate_include('files');
         while (FALSE !== ($file = readdir($handle))) {
@@ -109,8 +116,11 @@ class backup_migrate_destination_files extends backup_migrate_destination {
    * Get the filepath from the given file id.
    */
   function get_filepath($file_id) {
-    $filepath = rtrim($this->get_location(), '/') .'/'. $file_id;
-    return $filepath;
+    if ($dir = $this->get_realpath()) {
+      $filepath = rtrim($dir, '/') .'/'. $file_id;
+      return $filepath;
+    }
+    return FALSE;
   }
 
   /**

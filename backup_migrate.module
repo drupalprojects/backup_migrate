@@ -199,7 +199,7 @@ function backup_migrate_menu() {
 }
 
 /**
- * Implementation of hook_cron().
+ * Implementation of hook_elements().
  */
 function backup_migrate_elements() {
   $types['backup_migrate_dependent'] = array(
@@ -244,7 +244,7 @@ function backup_migrate_cron() {
 }
 
 /**
- * Implementation of hook_cron().
+ * Implementation of hook_cronapi().
  */
 function backup_migrate_cronapi($op, $job = NULL) {
   $items = array();
@@ -307,16 +307,16 @@ function backup_migrate_theme() {
 function backup_migrate_block($op = 'list', $delta = 0, $edit = array()) {
   switch ($op) {
     case 'list':
-      return _backup_migrate_block_info();
+      return backup_migrate_block_info();
     case 'view':
-      return _backup_migrate_block_view($delta);
+      return backup_migrate_block_view($delta);
   }
 }
 
 /**
- * List the available blocks.
+ * Implements hook_block_info().
  */
-function _backup_migrate_block_info() {
+function backup_migrate_block_info() {
   $blocks = array();
   $blocks['quick_backup'] = array(
     'info' => t('Backup and Migrate Quick Backup'),
@@ -326,11 +326,11 @@ function _backup_migrate_block_info() {
 }
 
 /**
- * Show the given block.
+ * Implements hook_block_view().
  */
-function _backup_migrate_block_view($delta) {
-  $function = '_backup_migrate_block_view_' . $delta;
-  if (function_exists('_backup_migrate_block_view_' . $delta)) {
+function backup_migrate_block_view($delta) {
+  $function = 'backup_migrate_block_view_' . $delta;
+  if (function_exists($function)) {
     return $function();
   }
 }
@@ -885,16 +885,6 @@ function backup_migrate_ui_manual_backup_form(&$form_state, $profile) {
   );
   $form['destination']['destination'] = _backup_migrate_get_destination_pulldown('manual backup', variable_get('backup_migrate_destination_id', 'download'));
 
-  // $form['destination']['destination_id'] = array(
-  //   "#type" => "select",
-  //   "#title" => t("Destination"),
-  //   "#options" => _backup_migrate_get_destination_form_item_options('manual backup'),
-  //   "#default_value" => variable_get("backup_migrate_destination_id", "download"),
-  // );
-  // if (user_access('administer backup and migrate')) {
-  //   $form['destination']['destination_id']['#description'] = l(t("Create new destination"), BACKUP_MIGRATE_MENU_PATH . "/destination/add");
-  // }
-
   if (user_access('administer backup and migrate')) {
     $form['save_settings'] = array(
       "#type" => "checkbox",
@@ -1127,7 +1117,7 @@ function backup_migrate_ui_manual_restore_form() {
   if (user_access('access backup files')) {
     $form[] = array(
       '#type' => 'markup',
-      '#value' => t('<p>Or you can restore one of your <a href="!url">previously saved backups.</a></p>', array("!url" => url("admin/content/backup_migrate/backups"))),
+      '#value' => t('<p>Or you can restore one of your <a href="!url">previously saved backups.</a></p>', array("!url" => url(BACKUP_MIGRATE_MENU_PATH . '/backups'))),
     );
   }
   $form['#attributes'] = array('enctype' => 'multipart/form-data');
