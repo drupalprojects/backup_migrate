@@ -102,11 +102,11 @@ class backup_migrate_destination_filesource extends backup_migrate_source {
   function _backup_to_file_php($file, $settings) {
     if ($this->check_libs()) {
       $excluded_paths = empty($settings->filters['exclude_filepaths']) ? '' : $settings->filters['exclude_filepaths'];
-      $files = $this->get_files_to_backup($this->get_location(), $settings, $this->get_excluded_paths($excluded_paths), realpath('.') . '/');
+      $files = $this->get_files_to_backup($this->get_realpath(), $settings, $this->get_excluded_paths($excluded_paths), realpath('.') . '/');
       if ($files) {
         $file->push_type('tar');
         $gz = new Archive_Tar($file->filepath(), false);
-        $gz->addModify($files, '', $this->get_location());
+        $gz->addModify($files, '', $this->get_realpath());
         return $file;
       }
       backup_migrate_backup_fail('No files available.', array(), $settings);
@@ -131,7 +131,7 @@ class backup_migrate_destination_filesource extends backup_migrate_source {
       $temp = backup_migrate_temp_directory();
 
       $file->push_type('tar'); 
-      backup_migrate_exec("tar --dereference -C %input -rf %output $exclude .", array('%output' => $file->filepath(), '%input' => $this->get_location(), '%temp' => $temp));
+      backup_migrate_exec("tar --dereference -C %input -rf %output $exclude .", array('%output' => $file->filepath(), '%input' => $this->get_realpath(), '%temp' => $temp));
 
       return $file;
     }
@@ -170,7 +170,7 @@ class backup_migrate_destination_filesource extends backup_migrate_source {
       }
 
       // Move the files from the temp directory.
-      _backup_migrate_move_files($temp, $this->get_location());
+      _backup_migrate_move_files($temp, $this->get_realpath());
 
       return $file;
     }
@@ -194,7 +194,7 @@ class backup_migrate_destination_filesource extends backup_migrate_source {
       }
 
       // Move the files from the temp directory.
-      backup_migrate_exec("mv -rf %temp/* %output", array('%output' => $this->get_location(), '%temp' => $temp));
+      backup_migrate_exec("mv -rf %temp/* %output", array('%output' => $this->get_realpath(), '%temp' => $temp));
       return $file;
     }
     return FALSE;
@@ -298,6 +298,13 @@ class backup_migrate_destination_filesource extends backup_migrate_source {
     // Restore include path.
     set_include_path($include_path_old);
     return $result;
+  }
+
+ /**
+   * Get the file location.
+   */
+  function get_realpath() {
+    return drupal_realpath($this->get_location());
   }
 }
 
