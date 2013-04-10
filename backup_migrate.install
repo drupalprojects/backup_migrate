@@ -559,7 +559,22 @@ function backup_migrate_update_6300() {
     db_drop_field($ret, 'backup_migrate_schedules', 'last_run');
   }
 
-  // @TODO: Move custom destinations to sources.
+  // Move custom destinations to sources.
+  $result = db_query("SELECT * FROM {backup_migrate_destinations} WHERE type in ('filesource', 'db')", array(), array('fetch' => PDO::FETCH_ASSOC));
+  foreach ($result as $item) {
+    $item['source_id'] = $item['destination_id'];
+    drupal_write_record('backup_migrate_source', $item);
+  }
+
+  // Change 'destination' settings to 'source' settings
+  $result = db_query('SELECT * FROM {backup_migrate_profiles}', array(), array('fetch' => PDO::FETCH_ASSOC));
+  foreach ($result as $item) {
+    $item['filters'] = unserialize($item['filters']);
+    $item['filters']['sources'] = $item['filters']['destinations'];
+    unset($item['filters']['destinations']);
+    drupal_write_record('backup_migrate_profiles', $item, array('profile_id'));
+  }
+
 
   return $ret;
 }
@@ -620,6 +635,6 @@ function backup_migrate_update_6303() {
   }
 
 
-  $ret = array();
+  return $ret;
 }
 
