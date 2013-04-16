@@ -100,8 +100,8 @@ function backup_migrate_backup_migrate_destinations() {
 
   // Add the default, out of the box destinations for new users.
   if (variable_get('backup_migrate_allow_backup_to_file', TRUE)) {
-    $out['manual']    = backup_migrate_create_destination('file_manual', array('destination_id' => 'manual'));
-    $out['scheduled'] = backup_migrate_create_destination('file_scheduled', array('destination_id' => 'scheduled'));
+    $out['manual']    = backup_migrate_create_destination('file_manual', array('machine_name' => 'manual'));
+    $out['scheduled'] = backup_migrate_create_destination('file_scheduled', array('machine_name' => 'scheduled'));
   }
   // Add the browser destination for downloading to the desktop.
   if (variable_get('backup_migrate_allow_backup_to_download', TRUE)) {
