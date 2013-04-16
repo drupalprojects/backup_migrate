@@ -4,16 +4,16 @@ backup_migrate_include('sources.db');
 
 /**
  * @file
- * Functions to handle the direct to database destination.
+ * Functions to handle the direct to database source.
  */
 
 /**
- * A destination type for saving to a database server.
+ * A source type for backing up from database server.
  *
  * @ingroup backup_migrate_destinations
  */
 
-class backup_migrate_destination_db_mysql extends backup_migrate_destination_db {
+class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   function type_name() {
     return t("MySQL Database");
   }
@@ -47,28 +47,28 @@ class backup_migrate_destination_db_mysql extends backup_migrate_destination_db 
 
 
  /**
-   * Declare any mysql databases defined in the settings.php file as a possible destination.
+   * Declare any mysql databases defined in the settings.php file as a possible source.
    */
   function sources() {
     $out = array();
     $urls = is_array($GLOBALS['db_url']) ? $GLOBALS['db_url'] : array('default' => $GLOBALS['db_url']);
     foreach ((array)$urls as $key => $url) {
-      // Only mysql/mysqli supported by this destination.
+      // Only mysql/mysqli supported by this source.
       if (strpos($url, 'mysql') === 0) {
-        if ($destination = backup_migrate_create_destination('mysql', array('url' => $url, 'show_in_list' => TRUE))) {
+        if ($source = backup_migrate_create_source('mysql', array('url' => $url, 'show_in_list' => TRUE))) {
           // Treat the default database differently because it is probably the only one available.
           if ($key == 'default') {
-            $destination->set_id('db');
-            $destination->set_name(t('Default Database'));
+            $source->set_id('db');
+            $source->set_name(t('Default Database'));
             // Dissalow backing up to the default database because that's confusing and potentially dangerous.
-            $destination->remove_op('scheduled backup');
-            $destination->remove_op('manual backup');
+            $source->remove_op('scheduled backup');
+            $source->remove_op('manual backup');
           }
           else {
-            $destination->set_id('db:'. $key);
-            $destination->set_name($destination->get_display_location());
+            $source->set_id('db:'. $key);
+            $source->set_name($source->get_display_location());
           }
-          $out[$destination->get_id()] = $destination;
+          $out[$source->get_id()] = $source;
         }
       }
     }
@@ -76,7 +76,7 @@ class backup_migrate_destination_db_mysql extends backup_migrate_destination_db 
   }
 
   /**
-   * Get the file type for to backup this destination to.
+   * Get the file type for to backup this source to.
    */
   function get_file_type_id() {
     return 'mysql';
