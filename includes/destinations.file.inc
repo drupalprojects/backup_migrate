@@ -277,8 +277,7 @@ class backup_migrate_destination_files extends backup_migrate_destination {
   
       // Attempt to read the test file via http. This may fail for other reasons,
       // so it's not a bullet-proof check.
-      $path = trim(drupal_substr($directory .'/test.txt', drupal_strlen(file_directory_path())), '\\/');
-      if ($this->test_file_readable_remotely($path, $test_contents)) {
+      if ($this->test_file_readable_remotely($directory .'/test.txt', $test_contents)) {
         $message = t("Security notice: Backup and Migrate will not save backup files to the server because the destination directory is publicly accessible. If you want to save files to the server, please secure the '%directory' directory", array('%directory' => $directory));
         drupal_set_message($message, "error");
         return FALSE;
@@ -307,7 +306,7 @@ class backup_migrate_destination_files extends backup_migrate_destination {
    * Check if a file can be read remotely via http.
    */
   function test_file_readable_remotely($path, $contents) {
-    $url = $GLOBALS['base_url'] .'/'. file_directory_path() .'/'. str_replace('\\', '/', $path);
+    $url = $GLOBALS['base_url'] .'/'. str_replace('\\', '/', $path);
     $result = drupal_http_request($url);
     if (!empty($result->data) && strpos($result->data, $contents) !== FALSE) {
       return TRUE;
