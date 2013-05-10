@@ -361,7 +361,8 @@ class backup_migrate_schedule extends backup_migrate_item {
    * Format the enabled status in human-readable form.
    */
   function get_last_run_description() {
-    return !empty($this->last_run) ? format_date($this->last_run, 'small') : t('Never');
+    $last_run = $this->get('last_run');
+    return !empty($last_run) ? format_date($last_run, 'small') : t('Never');
   }
 
   /**
@@ -622,7 +623,7 @@ class backup_migrate_schedule extends backup_migrate_item {
     $wait_time = $this->period - ($this->period * variable_get('backup_migrate_schedule_buffer', 0.01));
 
     $cron = $this->get('cron');
-    if ($cron == BACKUP_MIGRATE_CRON_BUILTIN && $this->is_enabled() && ($now - $this->last_run) >= $wait_time) {
+    if ($cron == BACKUP_MIGRATE_CRON_BUILTIN && $this->is_enabled() && ($now - $this->get('last_run')) >= $wait_time) {
       $this->run();
     }
   }
@@ -651,12 +652,14 @@ class backup_migrate_schedule extends backup_migrate_item {
     if ($timestamp === NULL) {
       $timestamp = time();
     }
-    db_query("UPDATE {backup_migrate_schedules}
-                 SET last_run = %d
-               WHERE schedule_id = '%s'",
-      $timestamp,
-      $this->get_id()
-    );
+    variable_set('backup_migrate_schedule_last_run_' . $this->get('id'), $timestamp);
+  }
+
+  /**
+   * Set the last run time of a schedule to the given timestamp, or now if none specified.
+   */
+  function get_last_run() {
+    return variable_get('backup_migrate_schedule_last_run_' . $this->get('id'), 0);
   }
 
   /**
