@@ -9,6 +9,9 @@
   font-size: 0.85em;
 }
 
+.backup-migrate-tables-checkboxes .form-item {
+  margin: 0;
+}
 .backup-migrate-tables-checkboxes .form-item label {
   width: 15em;
   float: left;
