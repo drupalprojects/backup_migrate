@@ -82,7 +82,7 @@
         }
 
         // Add the convert to checkboxes functionality to all multiselects.
-        $('select[multiple]').each(function () {
+        $('#backup-migrate-ui-manual-backup-form select[multiple], #backup-migrate-crud-edit-form select[multiple]').each(function() {
           var self = this;
           $(self).after(
             $('<div class="description backup-migrate-checkbox-link"></div>').append(
