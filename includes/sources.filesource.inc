@@ -24,7 +24,7 @@ class backup_migrate_destination_filesource extends backup_migrate_source {
    */
   function sources() {
     $out  = array();
-    $out['files'] = backup_migrate_create_destination('filesource', array('destination_id' => 'files', 'location' => file_directory_path(), 'name' => t('Files Directory'), 'show_in_list' => FALSE));
+    $out['files'] = backup_migrate_create_destination('filesource', array('machine_name' => 'files', 'location' => file_directory_path(), 'name' => t('Files Directory'), 'show_in_list' => FALSE));
     return $out;
   }
 
