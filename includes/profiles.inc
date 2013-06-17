@@ -9,11 +9,11 @@
 backup_migrate_include('crud');
 
 /**
- * Implementation of hook_backup_migrate_profile_types().
+ * Implementation of hook_backup_migrate_profile_subtypes().
  *
  * Get the built in Backup and Migrate profile types.
  */
-function backup_migrate_backup_migrate_profile_types() {
+function backup_migrate_backup_migrate_profile_subtypes() {
   $out = array();
   $out += array(
     'backup' => array(
@@ -67,7 +67,7 @@ function backup_migrate_backup_migrate_profiles() {
   $out = array();
 
   // Get the module default profile.
-  $out['default'] = backup_migrate_crud_create_item('profile', array('name' => t("Default Settings"), 'profile_id' => 'default'));
+  $out['default'] = backup_migrate_crud_create_item('profile', array('name' => t("Default Settings"), 'machine_name' => 'default'));
 
   return $out;
 }

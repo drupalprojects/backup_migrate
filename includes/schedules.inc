@@ -24,11 +24,11 @@ define('BACKUP_MIGRATE_KEEP_DEFAULT', 100);
 backup_migrate_include('crud');
 
 /**
- * Implementation of hook_backup_migrate_destination_types().
+ * Implementation of hook_backup_migrate_schedule_subtypes().
  *
- * Get the built in Backup and Migrate destination types.
+ * Get the built in Backup and Migrate schedule types.
  */
-function backup_migrate_backup_migrate_schedule_types() {
+function backup_migrate_backup_migrate_schedule_subtypes() {
   $out = array();
   $out += array(
     'backup' => array(
