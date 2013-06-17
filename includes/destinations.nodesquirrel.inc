@@ -115,7 +115,7 @@ function backup_migrate_nodesquirrel_settings_form($form_state) {
 
   // Warn the user if the key they entered is invalid.
   if ($key && empty($destination)) {
-    $form['nodesquirrel_status']['status']['#value'] = t('Your secret key does not seem to be valid. Please check that you entered it correctly or visit !ns to generate a new key.', array('!ns' => nodesquirrel_get_activate_link()));
+    $form['nodesquirrel_status']['status']['#markup'] = t('Your secret key does not seem to be valid. Please check that you entered it correctly or visit !ns to generate a new key.', array('!ns' => nodesquirrel_get_activate_link()));
   }
   else if (!empty($destination)) {
     $form['nodesquirrel_status']['manage'] = array(
@@ -159,13 +159,13 @@ class backup_migrate_destination_nodesquirrel extends backup_migrate_destination
    */
   function get_menu_items() {
     $items = array();
-    $path = BACKUP_MIGRATE_MENU_PATH . '/settings/nodesquirrel';
+    $path = BACKUP_MIGRATE_MENU_PATH . '/nodesquirrel';
     $items[$path] = array(
-      'title' => t('NodeSquirrel Settings'),
+      'title' => t('NodeSquirrel'),
       'page callback' => 'backup_migrate_menu_callback',
       'page arguments' => array('destinations.nodesquirrel', 'backup_migrate_nodesquirrel_settings'),
       'access arguments' => array('administer backup and migrate'),
-      'weight' => -1,
+      'weight' => 10,
       'type' => MENU_LOCAL_TASK,
     );
     return $items;
