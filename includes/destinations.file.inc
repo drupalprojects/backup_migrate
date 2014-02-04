@@ -232,7 +232,9 @@ class backup_migrate_destination_files extends backup_migrate_destination {
    * Check if the given directory is within the webroot and is therefore web accessible.
    */
   function dir_in_webroot($directory) {
-    if (strpos(drupal_realpath($directory), DRUPAL_ROOT) !== FALSE) {
+    $real_dir = drupal_realpath($directory);
+    $real_root = drupal_realpath(DRUPAL_ROOT);
+    if ($real_dir == $real_root || strpos($real_dir, $real_root . '/') === 0) {
       return TRUE;
     }
     return FALSE;
