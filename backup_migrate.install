@@ -495,8 +495,6 @@ function backup_migrate_update_7205() {
         'default' => '',
       );
 
-  $schema = backup_migrate_schema();
-
   // Update the length of each of the ids
   foreach ($schema as $table => $ids) {
     foreach ($ids['fields'] as $field => $spec) {
