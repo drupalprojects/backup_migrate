@@ -52,7 +52,7 @@ function nodesquirrel_get_activate_help_text() {
  * Get a helper link to activate a site and create a tree.
  */
 function nodesquirrel_get_activate_link() {
-  $activate_link = l('nodesquirrel.com/activate', variable_get('nodesquirrel_activate_url', 'http://manage.nodesquirrel.com/activate'), array('query' => array('url' => url('', array('absolute' => TRUE)), 'email' => variable_get('site_mail', ''), 'configure' => url($_GET['q'], array('absolute' => TRUE)))));
+  $activate_link = l('nodesquirrel.com/activate', variable_get('nodesquirrel_activate_url', 'https://manage.nodesquirrel.com/activate'), array('query' => array('url' => url('', array('absolute' => TRUE)), 'email' => variable_get('site_mail', ''), 'configure' => url($_GET['q'], array('absolute' => TRUE)))));
   return $activate_link;
 }
 
@@ -60,7 +60,7 @@ function nodesquirrel_get_activate_link() {
  * Get a helper link to activate a site and create a tree.
  */
 function nodesquirrel_get_manage_link($destination) {
-  $url = variable_get('nodesquirrel_manage_url', 'http://manage.nodesquirrel.com') . '/backups/' . $destination->_get_destination();
+  $url = variable_get('nodesquirrel_manage_url', 'https://manage.nodesquirrel.com') . '/backups/' . $destination->_get_destination();
   return l($url, $url);
 }
 
@@ -250,8 +250,7 @@ class backup_migrate_destination_nodesquirrel extends backup_migrate_destination
 
           if ($confirm['success']) {
             // Set a message with a link to the manage console.
-            $url = variable_get('nodesquirrel_manage_url', 'http://manage.nodesquirrel.com') . '/backups/' . $this->_get_destination();
-            _backup_migrate_message('Your backup has been saved to your NodeSquirrel account. View it at !account', array('!account' => l($url, $url)));
+            _backup_migrate_message('Your backup has been saved to your NodeSquirrel account. View it at !account', array('!account' => nodesquirrel_get_manage_link($this)));
 
             return $file;
           }
@@ -358,7 +357,7 @@ class backup_migrate_destination_nodesquirrel extends backup_migrate_destination
     $form = parent::edit_form();
 
     $form['settings'] = array('#tree' => TRUE);
-    $activate_link = l('nodesquirrel.com/activate', variable_get('nodesquirrel_activate_url', 'http://manage.nodesquirrel.com/activate'), array('query' => array('url' => url('', array('absolute' => TRUE)), 'email' => variable_get('site_mail', ''), 'configure' => url($_GET['q'], array('absolute' => TRUE)))));
+    $activate_link = nodesquirrel_get_activate_link();
 
     // Retrieve the key from the settings or get it from the get string if this is an auto-config action.
     $key = $this->settings('secret_key');
