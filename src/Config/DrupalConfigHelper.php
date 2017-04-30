@@ -106,7 +106,7 @@ class DrupalConfigHelper {
     }
 
     // Add each of the fields.
-    if (isset($schema['groups'])) {
+    if (isset($schema['fields'])) {
       foreach ($schema['fields'] as $field_key => $item) {
         $form_item = [];
         $value = $config->get($field_key);
