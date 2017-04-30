@@ -8,6 +8,7 @@
 namespace BackupMigrate\Core\Source;
 
 
+use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
 use BackupMigrate\Core\File\BackupFileWritableInterface;
 use BackupMigrate\Core\Plugin\PluginCallerTrait;
@@ -122,13 +123,16 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
    */
   protected function _getConnection() {
     if (!$this->connection) {
-     $this->connection = new \mysqli(
-        $this->confGet('host'),
-        $this->confGet('username'),
-        $this->confGet('password'),
-        $this->confGet('database'),
-        $this->confGet('port'),
-        $this->confGet('socket')
+      if (!function_exists('mysqli_init') && !extension_loaded('mysqli')) {
+        throw new BackupMigrateException('Cannot connect to the database becuase the MySQLi extension is missing.');
+      }
+      $this->connection = new \mysqli(
+          $this->confGet('host'),
+          $this->confGet('username'),
+          $this->confGet('password'),
+          $this->confGet('database'),
+          $this->confGet('port'),
+          $this->confGet('socket')
       );
       // Throw an error on fail
       if ($this->connection->connect_errno) {
@@ -137,7 +141,7 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
       // Ensure, that the character set is UTF8.
       if (!$this->connection->set_charset('utf8mb4')) {
         if (!$this->connection->set_charset('utf8')) {
-          throw new \Exception('UTF8 is not supported by the MySQL server');
+          throw new BackupMigrateException('UTF8 is not supported by the MySQL server');
         }
       }
     }
