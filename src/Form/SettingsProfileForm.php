@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\backup_migrate\Form\SettingsProfileForm.
- */
-
 namespace Drupal\backup_migrate\Form;
 
 use BackupMigrate\Core\Config\Config;
@@ -19,6 +14,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @package Drupal\backup_migrate\Form
  */
 class SettingsProfileForm extends EntityForm {
+
   /**
    * {@inheritdoc}
    */

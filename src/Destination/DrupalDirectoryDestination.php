@@ -1,12 +1,6 @@
 <?php
-/**
- * @file
- * Contains BackupMigrate\Drupal\Destination\DrupalDirectoryDestination
- */
-
 
 namespace BackupMigrate\Drupal\Destination;
-
 
 use BackupMigrate\Core\Destination\DirectoryDestination;
 use BackupMigrate\Core\Exception\BackupMigrateException;

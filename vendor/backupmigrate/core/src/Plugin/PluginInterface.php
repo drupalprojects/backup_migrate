@@ -11,7 +11,6 @@ use \BackupMigrate\Core\Config\ConfigInterface;
 use BackupMigrate\Core\Config\ConfigurableInterface;
 
 //use \BackupMigrate\Core\Services\ApplicationInterface;
-
 /**
  * All of the work is done in plugins. Therefore they may need injected:
  *

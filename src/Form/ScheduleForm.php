@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\backup_migrate\Form\ScheduleForm.
- */
 
 namespace Drupal\backup_migrate\Form;
 
@@ -19,6 +15,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @package Drupal\backup_migrate\Form
  */
 class ScheduleForm extends EntityForm {
+
   /**
    * {@inheritdoc}
    */

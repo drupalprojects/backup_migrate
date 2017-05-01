@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains ${NAMESPACE}\DirectoryDestinationPlugin
- */
 
 namespace Drupal\backup_migrate\Plugin\BackupMigrateDestination;
 

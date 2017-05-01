@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\backup_migrate\Form\BackupMigrateQuickBackupForm.
- */
-
 namespace Drupal\backup_migrate\Form;
 
 use BackupMigrate\Core\Config\Config;
@@ -33,12 +28,11 @@ class BackupMigrateAdvancedBackupForm extends FormBase {
     // Theme the form if we want it inline.
     // @FIXME
     // $form['#theme'] = 'backup_migrate_ui_manual_quick_backup_form_inline';
-    
     $bam = backup_migrate_get_service_object();
 
     $form['source'] = array(
       '#type' => 'fieldset',
-      "#title" => t("Source"),
+      "#title" => $this->t("Source"),
       "#collapsible" => TRUE,
       "#collapsed" => FALSE,
       "#tree" => FALSE,
@@ -50,7 +44,7 @@ class BackupMigrateAdvancedBackupForm extends FormBase {
 
     $form['destination'] = array(
       '#type' => 'fieldset',
-      "#title" => t("Destination"),
+      "#title" => $this->t("Destination"),
       "#collapsible" => TRUE,
       "#collapsed" => FALSE,
       "#tree" => FALSE,
@@ -61,7 +55,7 @@ class BackupMigrateAdvancedBackupForm extends FormBase {
 
     $form['quickbackup']['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Backup now'),
+      '#value' => $this->t('Backup now'),
       '#weight' => 1,
     );
 
@@ -93,6 +87,5 @@ class BackupMigrateAdvancedBackupForm extends FormBase {
     $config = $form_state->getValues();
     backup_migrate_perform_backup($config['source_id'], $config['destination_id'], $config);
   }
-
 
 }

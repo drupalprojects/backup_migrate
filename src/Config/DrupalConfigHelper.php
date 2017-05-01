@@ -1,9 +1,4 @@
 <?php
-/**
- * @file
- * Contains BackupMigrate\Drupal\Config\DrupalConfigHelper
- */
-
 
 namespace BackupMigrate\Drupal\Config;
 
@@ -12,7 +7,6 @@ use BackupMigrate\Core\Main\BackupMigrateInterface;
 use BackupMigrate\Core\Plugin\PluginManagerInterface;
 use Drupal\backup_migrate\Entity\SettingsProfile;
 use Drupal\Core\Form\FormStateInterface;
-
 
 /**
  * Class DrupalConfigHelper
@@ -28,6 +22,7 @@ class DrupalConfigHelper {
    *  'backup', 'restore', or 'initialize' depending on the operation being configured for.
    * @param array $parents
    *  The form parents array.
+   *
    * @return array
    */
   static public function buildAllPluginsForm(PluginManagerInterface $plugins, $operation, $parents = []) {
@@ -50,6 +45,7 @@ class DrupalConfigHelper {
    * @param string $operation
    *  'backup', 'restore', or 'initialize' depending on the operation being configured for.
    * @param array $parents
+   *
    * @return array
    */
   static public function buildPluginForm($plugin, $operation, $parents = ['config']) {
@@ -58,7 +54,6 @@ class DrupalConfigHelper {
 
     return DrupalConfigHelper::buildFormFromSchema($schema, $config, $parents);
   }
-
 
   /**
    * @param array $schema

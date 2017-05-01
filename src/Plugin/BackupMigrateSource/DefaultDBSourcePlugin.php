@@ -1,12 +1,6 @@
 <?php
-/**
- * @file
- * Contains Drupal\backup_migrate\Plugin\BackupMigrateSource\DefaultDBSourcePlugin
- */
-
 
 namespace Drupal\backup_migrate\Plugin\BackupMigrateSource;
-
 
 use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Filter\DBExcludeFilter;

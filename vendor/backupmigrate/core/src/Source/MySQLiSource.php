@@ -60,7 +60,6 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
 //        if (_backup_migrate_check_timeout()) {
 //          return FALSE;
 //        }
-
         $table = $this->plugins()->call('beforeDBTableBackup', $table, ['source' => $this]);
         if ($table['name'] && !isset($exclude[$table['name']]) && empty($table['exclude'])) {
           $file->write($this->_getTableCreateSQL($table));
@@ -324,7 +323,6 @@ FOOTER;
     // Otherwise export the table data.
     $rows_per_line  = 30; //$this->confGet('rows_per_line');//variable_get('backup_migrate_data_rows_per_line', 30);
     $bytes_per_line = 2000; //$this->confGet('bytes_per_line'); variable_get('backup_migrate_data_bytes_per_line', 2000);
-
     $lines = 0;
     $result = $this->query("SELECT * FROM `". $table['name'] ."`");
     $rows = $bytes = 0;

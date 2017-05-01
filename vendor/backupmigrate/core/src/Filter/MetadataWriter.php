@@ -34,7 +34,6 @@ class MetadataWriter extends PluginBase implements FileProcessorInterface, Plugi
     $schema = array();
 
     // Backup configuration
-
     if ($params['operation'] == 'backup') {
       $schema['groups']['advanced'] = [
         'title' => 'Advanced Settings',
