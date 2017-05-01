@@ -36,6 +36,9 @@ class DefaultDBSourcePlugin extends SourcePluginBase {
     // Add the default database.
     $info = \Drupal\Core\Database\Database::getConnectionInfo('default', 'default');
     $info = $info['default'];
+
+    // Set a default port if none is set. Because that's what core does.
+    $info['port'] = (empty($info['port']) ? 3306 : $info['port']);
     if ($info['driver'] == 'mysql') {
       $conf = $this->getConfig();
       foreach ($info as $key => $value) {

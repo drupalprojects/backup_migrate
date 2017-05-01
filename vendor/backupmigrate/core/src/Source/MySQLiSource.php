@@ -135,13 +135,13 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
           $this->confGet('socket')
       );
       // Throw an error on fail
-      if ($this->connection->connect_errno) {
-        throw new \Exception("Failed to connect to MySQL server");
+      if ($this->connection->connect_errno || !$this->connection->ping()) {
+        throw new BackupMigrateException("Failed to connect to MySQL server.");
       }
       // Ensure, that the character set is UTF8.
       if (!$this->connection->set_charset('utf8mb4')) {
         if (!$this->connection->set_charset('utf8')) {
-          throw new BackupMigrateException('UTF8 is not supported by the MySQL server');
+          throw new BackupMigrateException('UTF8 is not supported by the MySQL server.');
         }
       }
     }
