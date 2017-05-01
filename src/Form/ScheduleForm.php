@@ -50,8 +50,16 @@ class ScheduleForm extends EntityForm {
     );
 
     $bam = backup_migrate_get_service_object([], ['nobrowser' => TRUE]);
-    $form['source_id'] = DrupalConfigHelper::getSourceSelector($bam, t('Backup Source'));
-    $form['destination_id'] = DrupalConfigHelper::getDestinationSelector($bam, t('Backup Destination'));
+    $form['source_id'] = DrupalConfigHelper::getSourceSelector(
+      $bam,
+      t('Backup Source'),
+      $backup_migrate_schedule->get('source_id')
+    );
+    $form['destination_id'] = DrupalConfigHelper::getDestinationSelector(
+      $bam,
+      t('Backup Destination'),
+      $backup_migrate_schedule->get('destination_id')
+    );
 
     $form['settings_profile_id'] =
       DrupalConfigHelper::getSettingsProfileSelector(t('Settings Profile'));
@@ -63,11 +71,13 @@ class ScheduleForm extends EntityForm {
       '#type' => 'fieldset',
       '#title' => $this->t('Frequency'),
       '#field_prefix' => $this->t('Run every'),
-      '#attributes' => array('class' => array(
-        'container-inline',
-        'fieldgroup',
-        'form-composite'
-      )),
+      '#attributes' => array(
+        'class' => array(
+          'container-inline',
+          'fieldgroup',
+          'form-composite'
+        )
+      ),
     );
     $form['period_container']['period_number'] = array(
       '#type' => 'number',
@@ -105,7 +115,10 @@ class ScheduleForm extends EntityForm {
   public function buildEntity(array $form, FormStateInterface $form_state) {
     // Save period.
     $type = Schedule::getPeriodType($form_state->getValue('period_type'));
-    $seconds = Schedule::periodToSeconds(['number' => $form_state->getValue('period_number'), 'type' => $type]);
+    $seconds = Schedule::periodToSeconds([
+      'number' => $form_state->getValue('period_number'),
+      'type' => $type
+    ]);
 
     $form_state->setValue('period', $seconds);
 

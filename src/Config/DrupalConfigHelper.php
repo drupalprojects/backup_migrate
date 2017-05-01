@@ -209,9 +209,10 @@ class DrupalConfigHelper {
    *
    * @param \BackupMigrate\Core\Config\ConfigurableInterface[]|\BackupMigrate\Core\Plugin\PluginManagerInterface $plugins
    * @param $title
+   * @param null $default_value
    * @return array
    */
-  public static function getPluginSelector(PluginManagerInterface $plugins, $title) {
+  public static function getPluginSelector(PluginManagerInterface $plugins, $title, $default_value = NULL) {
     $options = [];
     foreach ($plugins->getAll() as $key => $plugin) {
       $options[$key] = $plugin->confGet('name', $key);
@@ -220,6 +221,7 @@ class DrupalConfigHelper {
       '#type' => 'select',
       '#title' => $title,
       '#options' => $options,
+      '#default_value' => $default_value
     ];
   }
 
@@ -228,10 +230,11 @@ class DrupalConfigHelper {
    *
    * @param \BackupMigrate\Core\Main\BackupMigrateInterface $bam
    * @param $title
+   * @param null $default_value
    * @return array
    */
-  public static function getSourceSelector(BackupMigrateInterface $bam, $title) {
-    return DrupalConfigHelper::getPluginSelector($bam->sources(), $title);
+  public static function getSourceSelector(BackupMigrateInterface $bam, $title, $default_value = NULL) {
+    return DrupalConfigHelper::getPluginSelector($bam->sources(), $title, $default_value);
   }
 
   /**
@@ -239,10 +242,11 @@ class DrupalConfigHelper {
    *
    * @param \BackupMigrate\Core\Main\BackupMigrateInterface $bam
    * @param $title
+   * @param null $default_value
    * @return array
    */
-  public static function getDestinationSelector(BackupMigrateInterface $bam, $title) {
-    return DrupalConfigHelper::getPluginSelector($bam->destinations(), $title);
+  public static function getDestinationSelector(BackupMigrateInterface $bam, $title, $default_value = NULL) {
+    return DrupalConfigHelper::getPluginSelector($bam->destinations(), $title, $default_value);
   }
 
 
