@@ -17,7 +17,7 @@ use BackupMigrate\Drupal\EntityPlugins\DestinationPluginBase;
  *   id = "Directory",
  *   title = @Translation("Server File Directory"),
  *   description = @Translation("Back up to a directory on your web server."),
- *   wrapped_class = "\BackupMigrate\Core\Destination\DirectoryDestination"
+ *   wrapped_class = "\BackupMigrate\Drupal\Destination\DrupalDirectoryDestination"
  * )
  */
 class DirectoryDestinationPlugin extends DestinationPluginBase {}
