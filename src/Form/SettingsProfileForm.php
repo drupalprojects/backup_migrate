@@ -68,7 +68,7 @@ class SettingsProfileForm extends EntityForm {
           '%label' => $backup_migrate_settings->label(),
         ]));
     }
-    $form_state->setRedirectUrl($backup_migrate_settings->urlInfo('collection'));
+    $form_state->setRedirectUrl($backup_migrate_settings->toUrl('collection'));
   }
 
 }

@@ -141,7 +141,7 @@ class ScheduleForm extends EntityForm {
           '%label' => $backup_migrate_schedule->label(),
         ]));
     }
-    $form_state->setRedirectUrl($backup_migrate_schedule->urlInfo('collection'));
+    $form_state->setRedirectUrl($backup_migrate_schedule->toUrl('collection'));
   }
 
 }
