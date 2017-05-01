@@ -2,8 +2,6 @@
 
 namespace Drupal\backup_migrate\Plugin\BackupMigrateDestination;
 
-use BackupMigrate\Core\Destination\DirectoryDestination;
-use BackupMigrate\Drupal\EntityPlugins\DestinationPluginInterface;
 use BackupMigrate\Drupal\EntityPlugins\DestinationPluginBase;
 
 /**

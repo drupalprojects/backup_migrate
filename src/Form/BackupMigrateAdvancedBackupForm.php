@@ -2,7 +2,6 @@
 
 namespace Drupal\backup_migrate\Form;
 
-use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Drupal\Config\DrupalConfigHelper;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;

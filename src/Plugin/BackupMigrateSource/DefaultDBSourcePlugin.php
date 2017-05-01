@@ -7,7 +7,6 @@ use BackupMigrate\Core\Filter\DBExcludeFilter;
 use BackupMigrate\Core\Main\BackupMigrateInterface;
 use BackupMigrate\Core\Source\MySQLiSource;
 use BackupMigrate\Drupal\EntityPlugins\SourcePluginBase;
-use BackupMigrate\Drupal\Source\DrupalSiteArchiveSource;
 
 /**
  * Defines an default database source plugin.

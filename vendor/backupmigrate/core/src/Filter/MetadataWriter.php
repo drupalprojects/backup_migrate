@@ -15,7 +15,6 @@ use BackupMigrate\Core\Plugin\FileProcessorTrait;
 use BackupMigrate\Core\Plugin\PluginBase;
 use BackupMigrate\Core\Plugin\PluginCallerInterface;
 use BackupMigrate\Core\Plugin\PluginCallerTrait;
-use BackupMigrate\Core\Translation\TranslatableTrait;
 
 /**
  * Class MetadataWriter

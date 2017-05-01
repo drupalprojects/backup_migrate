@@ -3,7 +3,6 @@
 namespace BackupMigrate\Drupal\Environment;
 
 use Psr\Log\AbstractLogger;
-use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
 /**

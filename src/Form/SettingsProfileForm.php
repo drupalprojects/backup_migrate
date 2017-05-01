@@ -2,9 +2,7 @@
 
 namespace Drupal\backup_migrate\Form;
 
-use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Drupal\Config\DrupalConfigHelper;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 

@@ -4,7 +4,6 @@ namespace Drupal\backup_migrate\Form;
 
 use BackupMigrate\Drupal\Config\DrupalConfigHelper;
 use Drupal\backup_migrate\Entity\SettingsProfile;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
