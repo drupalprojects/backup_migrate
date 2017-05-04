@@ -67,7 +67,8 @@ class BackupController extends ControllerBase {
    * @return mixed
    */
   public function listDestinationBackups(ListableDestinationInterface $destination, $backup_migrate_destination_id) {
-    $backups = $destination->listFiles();
+    // Get a sorted list of files
+    $backups = $destination->queryFiles();
 
     $rows = [];
     $header = array(
