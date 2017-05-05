@@ -155,8 +155,8 @@ class DirectoryDestination extends DestinationBase implements ListableDestinatio
     $count = 100,
     $start = 0
   ) {
-    $out = [];
 
+    // Get the full list of files.
     $out = $this->listFiles($count + $start);
     foreach ($out as $key => $file) {
       $out[$key] = $this->loadFileMetadata($file);
@@ -174,7 +174,7 @@ class DirectoryDestination extends DestinationBase implements ListableDestinatio
       });
     }
 
-    // Sort the files
+    // Sort the files.
     if ($sort && $sort_direction) {
       uasort($out, function ($a, $b) use ($sort, $sort_direction) {
         if ($sort_direction == SORT_DESC) {
@@ -186,7 +186,7 @@ class DirectoryDestination extends DestinationBase implements ListableDestinatio
       });
     }
 
-    // Slice the return array
+    // Slice the return array.
     if ($count || $start) {
       $out = array_slice($out, $start, $count);
     }
