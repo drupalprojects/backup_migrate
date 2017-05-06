@@ -5,8 +5,14 @@ use BackupMigrate\Core\Main\BackupMigrateInterface;
 use Drupal\backup_migrate\Entity\Destination;
 use Drupal\backup_migrate\Entity\Schedule;
 use Drupal\backup_migrate\Entity\Source;
+use Symfony\Component\ClassLoader\Psr4ClassLoader;
 
-require __DIR__.'/vendor/autoload.php';
+// Autoload the required classes
+$loader = new Psr4ClassLoader();
+$loader->addPrefix('BackupMigrate\\Core\\', __DIR__.'/lib/backup_migrate_core/src');
+// @TODO use the standard drupal module namespace
+$loader->addPrefix('BackupMigrate\\Drupal\\', __DIR__.'/src');
+$loader->register();
 
 define('BACKP_MIGRATE_MODULE_VERSION', '8.x-4.x-dev');
 
