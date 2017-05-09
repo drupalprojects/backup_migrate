@@ -5,6 +5,7 @@ use BackupMigrate\Core\Main\BackupMigrateInterface;
 use Drupal\backup_migrate\Entity\Destination;
 use Drupal\backup_migrate\Entity\Schedule;
 use Drupal\backup_migrate\Entity\Source;
+use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\ClassLoader\Psr4ClassLoader;
 
 // Autoload the required classes
@@ -175,5 +176,20 @@ function backup_migrate_cron() {
   $schedules = Schedule::loadMultiple();
   foreach ($schedules as $schedule) {
     $schedule->run($bam);
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function backup_migrate_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Label the items being deleted on uninstall to make the 'entire site' listing less terrifying.
+  if ($form_id === 'system_modules_uninstall_confirm_form') {
+    if (isset($form['entity_deletes']['backup_migrate_source'])) {
+      $form['text']['#markup'] .= '<p>' . t('Uninstalling Backup and Migrate will delete any custom Backup and Migrate configuration. <strong>Previously created backups will not be deleted.</strong>') . '</p>';
+    }
+    if (isset($form['entity_deletes']['backup_migrate_source']['#items']['entire_site'])) {
+      $form['entity_deletes']['backup_migrate_source']['#items']['entire_site'] = t('Full Site Backup Source');
+    }
   }
 }
