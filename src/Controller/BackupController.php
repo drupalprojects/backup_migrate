@@ -91,28 +91,36 @@ class BackupController extends ControllerBase {
     $backup_migrate_destination_id,
     $count = NULL
   ) {
-    // Get a sorted list of files
-    $backups = $destination->queryFiles([], NULL, NULL, $count);
 
+    // Get a sorted list of files
     $rows = [];
     $header = array(
       array(
         'data' => $this->t('Name'),
-        'class' => array(RESPONSIVE_PRIORITY_MEDIUM)
+        'class' => array(RESPONSIVE_PRIORITY_MEDIUM),
+        'field' => 'name'
       ),
       array(
         'data' => $this->t('Date'),
-        'class' => array(RESPONSIVE_PRIORITY_MEDIUM)
+        'class' => array(RESPONSIVE_PRIORITY_MEDIUM),
+        'field' => 'datestamp', 'sort' => 'desc'
       ),
       array(
         'data' => $this->t('Size'),
-        'class' => array(RESPONSIVE_PRIORITY_MEDIUM)
+        'class' => array(RESPONSIVE_PRIORITY_MEDIUM),
+        'field' => 'filesize', 'sort' => 'desc'
       ),
       array(
         'data' => $this->t('Operations'),
         'class' => array(RESPONSIVE_PRIORITY_LOW)
       ),
     );
+
+    $order = tablesort_get_order($header);
+    $sort = tablesort_get_sort($header);
+    $php_sort = $sort == 'desc' ? SORT_DESC : SORT_ASC;
+
+    $backups = $destination->queryFiles([], $order['sql'], $php_sort, $count);
 
     foreach ($backups as $backup_id => $backup) {
       $rows[] = [

@@ -7,6 +7,8 @@ use BackupMigrate\Core\Exception\BackupMigrateException;
 use BackupMigrate\Core\File\BackupFileReadableInterface;
 use Drupal\Core\File\FileSystem;
 use Drupal\Core\StreamWrapper\PrivateStream;
+use BackupMigrate\Core\File\ReadableStreamBackupFile;
+
 
 /**
  * Class DrupalDirectoryDestination
@@ -78,5 +80,63 @@ class DrupalDirectoryDestination extends DirectoryDestination {
 
 
     // @TODO: Warn if the realpath cannot be resolved (because we cannot determine if the file is publicly accessible)
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function queryFiles(
+    $filters = [],
+    $sort = 'datestamp',
+    $sort_direction = SORT_DESC,
+    $count = 100,
+    $start = 0
+  ) {
+
+    // Get the full list of files.
+    $out = $this->listFiles($count + $start);
+    foreach ($out as $key => $file) {
+      $out[$key] = $this->loadFileMetadata($file);
+    }
+
+    // Filter the output.
+    if ($filters) {
+      $out = array_filter($out, function($file) use ($filters) {
+        foreach ($filters as $key => $value) {
+          if ($file->getMeta($key) !== $value) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+
+    // Sort the files.
+    if ($sort && $sort_direction) {
+      uasort($out, function ($a, $b) use ($sort, $sort_direction) {
+        if ($sort_direction == SORT_DESC) {
+          if($sort == 'name') {
+            return $a->getFullName() < $b->getFullName();
+          }
+          //@TODO: fix this in core
+          return $a->getMeta($sort) < $b->getMeta($sort);
+        }
+        else {
+          if($sort == 'name') {
+            return $a->getFullName() > $b->getFullName();
+          }
+          //@TODO: fix this in core
+          return $a->getMeta($sort) > $b->getMeta($sort);
+        }
+      });
+    }
+
+    // Slice the return array.
+    if ($count || $start) {
+      $out = array_slice($out, $start, $count);
+    }
+
+    return $out;
   }
 }
