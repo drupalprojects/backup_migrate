@@ -15,5 +15,5 @@
   "support": {
     "issues": "https://www.drupal.org/project/issues/backup_migrate",
     "source": "http://cgit.drupalcode.org/backup_migrate"
-  },
+  }
 }
