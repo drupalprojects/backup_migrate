@@ -28,7 +28,14 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
    */
   public function configSchema($params = array()) {
     $schema = array();
-
+    if (\Drupal::moduleHandler()->moduleExists('token')) {
+      $must_match = '/^[\w\-_:\[\]]+$/';
+      $must_match_err = $this->t('%title must contain only letters, numbers, dashes (-) and underscores (_). And Site Tokens.');
+    }
+    else {
+      $must_match = '/^[\w\-_:]+$/';
+      $must_match_err = $this->t('%title must contain only letters, numbers, dashes (-) and underscores (_).');
+    }
     // Backup configuration
     if ($params['operation'] == 'backup') {
       $schema['groups']['file'] = [
@@ -38,8 +45,8 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
         'group' => 'file',
         'type' => 'text',
         'title' => 'File Name',
-        'must_match' => '/^[\w\-_]+$/',
-        'must_match_error' => $this->t('%title must contain only letters, numbers, dashes (-) and underscores (_).'),
+        'must_match' => $must_match,
+        'must_match_error' => $must_match_err,
         'min_length' => 1,
         // Allow a 200 character backup name leaving a generous 55 characters
         // for timestamp and extension.
@@ -94,7 +101,13 @@ class FileNamer extends PluginBase implements FileProcessorInterface {
    * @return \BackupMigrate\Core\File\BackupFileReadableInterface
    */
   public function afterBackup(BackupFileReadableInterface $file) {
-    $name = $this->confGet('filename');
+    if (\Drupal::moduleHandler()->moduleExists('token')) {
+      $token = \Drupal::token();
+      $name = $token->replace($this->confGet('filename'));
+    }
+    else {
+      $name = $this->confGet('filename');
+    }
     if ($this->confGet('timestamp')) {
       $name .= '-' . gmdate($this->confGet('timestamp_format'));
     }

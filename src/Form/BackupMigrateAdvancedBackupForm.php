@@ -40,6 +40,23 @@ class BackupMigrateAdvancedBackupForm extends FormBase {
     $form['source']['source_id']['#default_value'] = \Drupal::config('backup_migrate.settings')->get('backup_migrate_source_id');
 
     $form += DrupalConfigHelper::buildAllPluginsForm($bam->plugins(), 'backup');
+    if (\Drupal::moduleHandler()->moduleExists('token')) {
+      $filename_token = [
+        '#theme' => 'token_tree_link',
+        '#token_types' => ['site'],
+        '#dialog' => TRUE,
+        '#click_insert' => TRUE,
+        '#show_restricted' => TRUE,
+        '#group' => 'file',
+      ];
+    }
+    else {
+      $filename_token = [
+        '#type' => 'markup',
+        '#markup' => 'In order to use tokens for File Name, please install & enable <a href="https://www.drupal.org/project/token" arget="_blank">Token module</a>. <p></p>'
+        ];
+    }
+    array_splice( $form['file'], 4, 0, array('filename_token' => $filename_token));
 
     $form['destination'] = array(
       '#type' => 'fieldset',
