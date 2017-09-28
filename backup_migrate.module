@@ -127,6 +127,8 @@ function backup_migrate_backup_migrate_service_object_alter(BackupMigrateInterfa
   // TODO: Make this better.
   if (empty($options['nobrowser'])) {
     // Add a download destination.
+    $user = \Drupal::currentUser();
+    if ($user->hasPermission('Access backup files'))
     $destinations->add('download', new \BackupMigrate\Drupal\Destination\DrupalBrowserDownloadDestination(new Config(['name' => t('Download')])));
 
     // Add an upload destination
@@ -135,7 +137,7 @@ function backup_migrate_backup_migrate_service_object_alter(BackupMigrateInterfa
     // Add a debug destination.
     $destinations->add('debug', new \BackupMigrate\Core\Destination\DebugDestination(new Config(['name' => t('Debug'), 'format' => 'html'])));
   }
-  
+
   // Add a file naming filter.
   $plugins->add('namer', new \BackupMigrate\Core\Filter\FileNamer());
 
