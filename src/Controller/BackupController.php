@@ -140,9 +140,9 @@ class BackupController extends ControllerBase {
                     'entity.backup_migrate_destination.backup_restore',
                     [
                       'backup_migrate_destination' => $backup_migrate_destination_id,
-                      'backup_id' => $backup_id
+                      'backup_id' => $backup_id,
                     ]
-                  )
+                  ),
                 ],
                 'download' => [
                   'title' => $this->t('Download'),
@@ -150,9 +150,9 @@ class BackupController extends ControllerBase {
                     'entity.backup_migrate_destination.backup_download',
                     [
                       'backup_migrate_destination' => $backup_migrate_destination_id,
-                      'backup_id' => $backup_id
+                      'backup_id' => $backup_id,
                     ]
-                  )
+                  ),
                 ],
                 'delete' => [
                   'title' => $this->t('Delete'),
@@ -160,23 +160,23 @@ class BackupController extends ControllerBase {
                     'entity.backup_migrate_destination.backup_delete',
                     [
                       'backup_migrate_destination' => $backup_migrate_destination_id,
-                      'backup_id' => $backup_id
+                      'backup_id' => $backup_id,
                     ]
-                  )
+                  ),
                 ],
-              ]
-            ]
+              ],
+            ],
           ],
         ],
       ];
     }
 
-    $build['backups_table'] = array(
+    $build['backups_table'] = [
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
       '#empty' => $this->t('There are no backups in this destination.'),
-    );
+    ];
 
     return $build;
   }
