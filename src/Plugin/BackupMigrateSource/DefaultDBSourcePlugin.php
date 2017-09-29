@@ -49,10 +49,29 @@ class DefaultDBSourcePlugin extends SourcePluginBase {
   public function alterBackupMigrate(BackupMigrateInterface $bam, $key, $options = []) {
     if ($source = $this->getObject()) {
       $bam->sources()->add($key, $source);
-
+      // @TODO: This needs a better solution.
       $config = [
         'exclude_tables' => [],
-        'nodata_tables' => [],
+        'nodata_tables' => [
+          'cache_advagg_minify',
+          'cache_bootstrap',
+          'cache_config',
+          'cache_container',
+          'cache_data',
+          'cache_default',
+          'cache_discovery',
+          'cache_discovery_migration',
+          'cache_dynamic_page_cache',
+          'cache_entity',
+          'cache_menu',
+          'cache_migrate',
+          'cache_render',
+          'cache_rest',
+          'cache_toolbar',
+          'sessions',
+          'watchdog',
+          'webprofiler',
+        ],
       ];
 
       // @TODO: Allow modules to add their own excluded tables.
