@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains BackupMigrate\Core\Filter\CompressFilter
- */
 
 namespace BackupMigrate\Core\Filter;
 
@@ -208,6 +204,10 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
         $success = TRUE;
         $from->close();
         gzclose($fp_out);
+
+        // Get the compressed filesize and set it.
+        $fileszc = filesize(drupal_realpath($to->realpath()));
+        $to->setMeta('filesize', $fileszc);
       }
     }
 
@@ -255,6 +255,10 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
         $success = TRUE;
         $from->close();
         bzclose($fp_out);
+
+        // Get the compressed filesize and set it.
+        $fileszc = filesize(drupal_realpath($to->realpath()));
+        $to->setMeta('filesize', $fileszc);
       }
     }
 
@@ -286,28 +290,28 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
   }
 
   /**
-   * Gzip encode a file.
+   * Zip encode a file.
    *
    * @param \BackupMigrate\Core\File\BackupFileReadableInterface $from
+   *
    * @param \BackupMigrate\Core\File\BackupFileWritableInterface $to
+   *
    * @return bool
    */
   protected function _ZipEncode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
     $success = FALSE;
 
     if (class_exists('ZipArchive')) {
-      $zip = new \ZipArchive;
-      if ($zip->open($from->realpath())) {
-        $filename = ($zip->getNameIndex(0));
-        if ($fp_in = $zip->getStream($filename)) {
-          while (!feof($fp_in)) {
-            $to->write(fread($fp_in, 1024 * 512));
-          }
-          fclose($fp_in);
-          $success = TRUE;
-        }
+      $zip = new \ZipArchive();
+      $res = $zip->open(drupal_realpath($to->realpath()), constant("ZipArchive::CREATE"));
+      if ($res === TRUE) {
+        $zip->addFile(drupal_realpath($from->realpath()), $from->getFullName());
       }
+      $success = $zip->close();
     }
+    // Get the compressed filesize and set it.
+    $fileszc = filesize(drupal_realpath($to->realpath()));
+    $to->setMeta('filesize', $fileszc);
 
     return $success;
   }
@@ -321,17 +325,20 @@ class CompressionFilter extends PluginBase implements FileProcessorInterface {
    */
   protected function _ZipDecode(BackupFileReadableInterface $from, BackupFileWritableInterface $to) {
     $success = FALSE;
-
     if (class_exists('ZipArchive')) {
-      $zip = new \ZipArchive;
-      $res = $zip->open($to->realpath(), constant("ZipArchive::CREATE"));
-      if ($res === TRUE) {
-        $zip->addFile($from->realpath(), $from->getMeta('filename'));
-        $success = $zip->close();
+      $zip = new \ZipArchive();
+      if ($zip->open(drupal_realpath($from->realpath()))) {
+        $filename = ($zip->getNameIndex(0));
+        if ($fp_in = $zip->getStream($filename)) {
+          while (!feof($fp_in)) {
+            $to->write(fread($fp_in, 1024 * 512));
+          }
+          fclose($fp_in);
+          $success = $to->close();
+        }
       }
+      return $success;
     }
-
-    return $success;
   }
 
   /**
