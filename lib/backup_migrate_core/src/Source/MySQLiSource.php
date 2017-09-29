@@ -178,6 +178,10 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE=NO_AUTO_VALUE_ON_ZERO */;
 
+/* @TODO expose these options in config with the ability to turn on and off */
+
+SET AUTOCOMMIT = 0;
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET NAMES utf8;
 
@@ -199,6 +203,10 @@ HEADER;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 
+/* @TODO expose these options in config with the ability to turn on and off */
+SET FOREIGN_KEY_CHECKS = 1;
+COMMIT;
+SET AUTOCOMMIT = 1;
 FOOTER;
   }
 
