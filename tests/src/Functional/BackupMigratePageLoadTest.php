@@ -28,29 +28,28 @@ class BackupMigratePageLoadTest extends BrowserTestBase {
   public function setUp() {
     parent::setUp();
     $this->container->get('router.builder')->rebuild();
+
+    // Ensure backup_migrate folder exists, the
+    // `admin/config/development/backup_migrate/backups` path will fail without
+    // this.
+    $path = 'private://backup_migrate/';
+    file_prepare_directory($path, FILE_CREATE_DIRECTORY);
   }
 
   /**
    * Tests if site quick backup function loads
    */
   public function testPages() {
-
-    //Ensure backup_migrate folder exists. `admin/config/development/backup_migrate/backups` url will fail without this.
-    $path = 'private://backup_migrate/';
-
-    file_prepare_directory($path, FILE_CREATE_DIRECTORY);
-
     $account = $this->drupalCreateUser([
-      'perform backup',
-      'administer backup and migrate',
-      'restore from backup',
-      'delete backup files',
       'access backup files',
+      'administer backup and migrate',
+      'perform backup',
+      'restore from backup',
     ]);
     $this->drupalLogin($account);
 
-    $urls = [
-      '/admin/config/development/backup_migrate' => ['text' => 'Quick Backup'],
+    $paths = [
+      'admin/config/development/backup_migrate' => ['text' => 'Quick Backup'],
       'admin/config/development/backup_migrate/advanced' => ['text' => 'Advanced Backup'],
       'admin/config/development/backup_migrate/restore' => ['text' => 'Restore'],
       'admin/config/development/backup_migrate/backups' => ['text' => 'Backups'],
@@ -64,8 +63,8 @@ class BackupMigratePageLoadTest extends BrowserTestBase {
       'admin/config/development/backup_migrate/settings/source/add' => ['text' => 'Add Backup Source'],
     ];
 
-    foreach ($urls as $url => $settings) {
-      $this->drupalGet($url);
+    foreach ($paths as $path => $settings) {
+      $this->drupalGet($path);
       $this->assertSession()->statusCodeEquals(200);
       $this->assertSession()->pageTextContains($settings['text']);
     }

@@ -4,7 +4,6 @@ namespace Drupal\Tests\backup_migrate\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 
-
 /**
  * Tests backup migrate quick backup functionality.
  *
@@ -27,41 +26,40 @@ class BackupMigrateQuickBackupTest extends BrowserTestBase {
    */
   public function setUp() {
     parent::setUp();
+
+    // Ensure backup_migrate folder exists.
+    $path = 'private://backup_migrate/';
+    file_prepare_directory($path, FILE_CREATE_DIRECTORY);
   }
 
   /**
-   * Tests quick backup
+   * Tests quick backup.
    */
   public function testQuickBackup() {
-
-    //Ensure backup_migrate folder exists
-    $path = 'private://backup_migrate/';
-    file_prepare_directory($path, FILE_CREATE_DIRECTORY);
-
     $this->drupalLogin($this->drupalCreateUser([
       'perform backup',
+      'access backup files',
       'administer backup and migrate',
     ]));
     $this->drupalGet('admin/config/development/backup_migrate');
     $this->assertSession()->statusCodeEquals(200);
 
-    //submit the quick backup form
+    // Submit the quick backup form.
     $data = [
       'source_id' => 'default_db',
       'destination_id' => 'private_files',
     ];
     $this->submitForm($data, t('Backup now'));
 
-    //get backups page
+    // Get backups page.
     $this->drupalGet('admin/config/development/backup_migrate/backups');
     $this->assertSession()->statusCodeEquals(200);
 
-    //searching for the existing backups
+    // Searching for the existing backups.
     $page = $this->getSession()->getPage();
     $table = $page->find('css', 'table');
     $row = $table->find('css', sprintf('tbody tr:contains("%s")', '.mysql.gz'));
     $this->assertNotNull($row);
-
   }
 
 }
