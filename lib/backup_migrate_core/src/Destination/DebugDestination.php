@@ -23,7 +23,6 @@ class DebugDestination extends StreamDestination implements WritableDestinationI
    * {@inheritdoc}
    */
   function saveFile(BackupFileReadableInterface $file) {
-    $out = [];
 
     // Quick and dirty way to html format this output.
     if ($this->confGet('format') == 'html') {

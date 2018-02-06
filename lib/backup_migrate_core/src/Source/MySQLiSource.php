@@ -45,7 +45,6 @@ class MySQLiSource extends DatabaseSource implements PluginCallerInterface {
    *    A backup file with the contents of the source dumped to it..
    */
   public function exportToFile() {
-    $out = NULL;
     if ($connection = $this->_getConnection()) {
       $file = $this->getTempFileManager()->create('mysql');
 
