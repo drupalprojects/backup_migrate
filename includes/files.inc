@@ -62,7 +62,6 @@ function _backup_migrate_temp_files_delete_file($file) {
           _backup_migrate_temp_files_delete_file("$dir/$file");
         }
       }
-      closedir($handle);
       rmdir($dir);
     }
     else {
@@ -85,7 +84,6 @@ function _backup_migrate_move_files($from, $to) {
           _backup_migrate_move_files("$from/$file", "$to/$file");
         }
       }
-      closedir($handle);
     }
     else {
       rename($from, $to);
