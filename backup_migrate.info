@@ -31,5 +31,5 @@ files[] = includes/sources.db.mysql.inc
 files[] = includes/sources.filesource.inc
 
 ; Test suite.
-files[] = tests/BackupMigrateHelper.test
-files[] = tests/BackupMigrateBasicsTest.test
+files[] = tests/BmTestBase.test
+files[] = tests/BmTestBasics.test

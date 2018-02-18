@@ -1,0 +1,101 @@
+<?php
+
+/**
+ * @file
+ * Shared functionality to make the rest of the tests simpler.
+ */
+
+/**
+ * Base class for testing a module's custom tags.
+ */
+abstract class BmTestBase extends DrupalWebTestCase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp(array $modules = array()) {
+    $modules[] = 'backup_migrate';
+    parent::setUp($modules);
+  }
+
+  /**
+   * Log in as user 1.
+   *
+   * The benefit of doing this is that it ignores permissions entirely, so the
+   * raw functionality can be tested.
+   */
+  protected function loginUser1() {
+    // Load user 1.
+    $account = user_load(1, TRUE);
+
+    // Reset the password.
+    $password = user_password();
+    $edit = array(
+      'pass' => $password,
+    );
+    user_save($account, $edit);
+    $account->pass_raw = $password;
+
+    // Login.
+    $this->drupalLogin($account);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function verbose($message, $title = NULL) {
+    // Handle arrays, objects, etc.
+    if (!is_string($message)) {
+      $message = "<pre>\n" . print_r($message, TRUE) . "\n</pre>\n";
+    }
+
+    // Optional title to go before the output.
+    if (!empty($title)) {
+      $title = '<h2>' . check_plain($title) . "</h2>\n";
+    }
+
+    parent::verbose($title . $message);
+  }
+
+  /**
+   * Confirm that a selector has the expected items.
+   */
+  protected function assertSelectOptions($select_id, array $options, $message = '') {
+    $elements = $this
+      ->xpath('//select[@id=:id]//option', array(
+        ':id' => $select_id,
+      ));
+    $results = $this->assertEqual(count($elements), count($options), t('The same number of items were found as were requested'));
+    $this->verbose($elements);
+
+    foreach ($options as $option) {
+      $elements = $this
+        ->xpath('//select[@id=:id]//option[@value=:option]', array(
+          ':id' => $select_id,
+          ':option' => $option,
+        ));
+      $this->verbose($elements);
+      $results *= $this->assertTrue(isset($elements[0]), $message ? $message : t('Option @option for field @id is present.', array(
+          '@option' => $option,
+          '@id' => $select_id,
+        )), t('Browser'));
+    }
+
+    return $results;
+  }
+
+  /**
+   * Confirm that a specific selector does not have items selected.
+   */
+  protected function assertNoOptionsSelected($id, $message = '') {
+    $elements = $this
+      ->xpath('//select[@id=:id]//option[@selected="selected"]', array(
+        ':id' => $id,
+      ));
+    return $this
+      ->assertTrue(!isset($elements[0]), $message ? $message : t('Field @id does not have any selected items.', array(
+        '@id' => $id,
+      )), t('Browser'));
+  }
+
+}
