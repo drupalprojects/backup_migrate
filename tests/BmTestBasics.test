@@ -22,12 +22,19 @@ class BmTestBasics extends BmTestBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function setUp(array $modules = array()) {
+    parent::setUp($modules);
+
+    // Log in as user 1, so that permissions are irrelevant.
+    $this->loginUser1();
+  }
+
+  /**
    * Verify the main page has the expected functionality available.
    */
   public function testMainPage() {
-    // Log in as user 1, so that permissions are irrelevant.
-    $this->loginUser1();
-
     // Load the main B&M page.
     $this->drupalGet(BACKUP_MIGRATE_MENU_PATH);
     $this->assertResponse(200);
@@ -67,9 +74,6 @@ class BmTestBasics extends BmTestBase {
    * Confirm the initial backup process works.
    */
   public function testFirstBackup() {
-    // Log in as user 1, so that permissions are irrelevant.
-    $this->loginUser1();
-
     // Load the main B&M page.
     $this->drupalGet(BACKUP_MIGRATE_MENU_PATH);
     $this->assertResponse(200);

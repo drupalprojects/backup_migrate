@@ -180,7 +180,8 @@ function _backup_migrate_default_filename() {
     return '[site:name]';
   }
   else {
-    // Cleaning the string isn't strictly necessary but it looks better in the settings field.
+    // Cleaning the string isn't strictly necessary but it looks better in the
+    // settings field.
     return _backup_migrate_clean_filename(variable_get('site_name', "backup_migrate"));
   }
 }
