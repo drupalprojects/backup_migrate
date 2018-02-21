@@ -5,7 +5,7 @@ namespace Drupal\backup_migrate\Plugin\BackupMigrateSource;
 use BackupMigrate\Core\Config\Config;
 use BackupMigrate\Core\Filter\DBExcludeFilter;
 use BackupMigrate\Core\Main\BackupMigrateInterface;
-use BackupMigrate\Core\Source\MySQLiSource;
+use BackupMigrate\Drupal\Source\DrupalMySQLiSource;
 use BackupMigrate\Drupal\EntityPlugins\SourcePluginBase;
 
 /**
@@ -37,7 +37,7 @@ class DefaultDBSourcePlugin extends SourcePluginBase {
       foreach ($info as $key => $value) {
         $conf->set($key, $value);
       }
-      return new MySQLiSource($conf);
+      return new DrupalMySQLiSource($conf);
     }
 
     return NULL;

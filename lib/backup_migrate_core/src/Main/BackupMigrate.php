@@ -147,7 +147,10 @@ class BackupMigrate implements BackupMigrateInterface {
       $file = $this->plugins()->call('beforeRestore', $file);
 
       // Do the actual source restore.
-      $source->importFromFile($file);
+      $import_result = $source->importFromFile($file);
+      if(!$import_result) {
+        throw new BackupMigrateException('The file could not be imported.');
+      }
 
       // Run each of the installed plugins which implements the 'beforeBackup' operation.
       $this->plugins()->call('afterRestore');
