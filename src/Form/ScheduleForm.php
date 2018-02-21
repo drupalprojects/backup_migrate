@@ -57,8 +57,10 @@ class ScheduleForm extends EntityForm {
       $backup_migrate_schedule->get('destination_id')
     );
 
-    $form['settings_profile_id'] =
-      DrupalConfigHelper::getSettingsProfileSelector(t('Settings Profile'));
+    $form['settings_profile_id'] = DrupalConfigHelper::getSettingsProfileSelector(
+      t('Settings Profile'),
+      $backup_migrate_schedule->get('settings_profile_id')
+    );
 
     $period = Schedule::secondsToPeriod($backup_migrate_schedule->get('period'));
     $form['period_container'] = [

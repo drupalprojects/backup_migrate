@@ -260,7 +260,7 @@ class DrupalConfigHelper {
    *
    * @return array
    */
-  public static function getSettingsProfileSelector($title) {
+  public static function getSettingsProfileSelector($title, $default_value = NULL) {
     $options = [];
     foreach (SettingsProfile::loadMultiple() as $key => $profile) {
       $options[$key] = $profile->get('label');
@@ -270,6 +270,7 @@ class DrupalConfigHelper {
         '#type' => 'select',
         '#title' => $title,
         '#options' => $options,
+        '#default_value' => $default_value
       ];
     }
   }
