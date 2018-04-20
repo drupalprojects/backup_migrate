@@ -76,9 +76,9 @@ abstract class BmTestBase extends DrupalWebTestCase {
         ));
       $this->verbose($elements);
       $results *= $this->assertTrue(isset($elements[0]), $message ? $message : t('Option @option for field @id is present.', array(
-          '@option' => $option,
-          '@id' => $select_id,
-        )), t('Browser'));
+        '@option' => $option,
+        '@id' => $select_id,
+      )), t('Browser'));
     }
 
     return $results;
@@ -202,7 +202,7 @@ abstract class BmTestBase extends DrupalWebTestCase {
 
     return preg_match($pattern, $file->file_info['filename']);
   }
-  
+
   /**
    * Confirm that a backup filename includes a timestamp.
    *

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @file
+ */
+
 backup_migrate_include('sources.db');
 
 /**
@@ -12,16 +16,15 @@ backup_migrate_include('sources.db');
  *
  * @ingroup backup_migrate_destinations
  */
-
 class backup_migrate_source_db_mysql extends backup_migrate_source_db {
-  function type_name() {
+  public function type_name() {
     return t("MySQL Database");
   }
 
   /**
    * Return a list of backup filetypes.
    */
-  function file_types() {
+  public function file_types() {
     return array(
       "sql" => array(
         "extension" => "sql",
@@ -41,19 +44,19 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   /**
    * Return the scheme for this db type.
    */
-  function default_scheme() {
+  public function default_scheme() {
     return 'mysql';
   }
 
 
- /**
+  /**
    * Declare any mysql databases defined in the settings.php file as a possible source.
    */
-  function sources() {
+  public function sources() {
     $out = array();
     global $databases;
-    foreach ((array)$databases as $db_key => $target) {
-      foreach ((array)$target as $tgt_key => $info) {
+    foreach ((array) $databases as $db_key => $target) {
+      foreach ((array) $target as $tgt_key => $info) {
         // Only mysql/mysqli supported by this source.
         $key = $db_key . ':' . $tgt_key;
         if ($info['driver'] === 'mysql') {
@@ -68,8 +71,8 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
               $source->remove_op('manual backup');
             }
             else {
-              $source->set_id('db:'. $key);
-              $source->set_name($key .": ". $source->get_display_location());
+              $source->set_id('db:' . $key);
+              $source->set_name($key . ": " . $source->get_display_location());
             }
             $out[$source->get_id()] = $source;
           }
@@ -82,7 +85,7 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   /**
    * Get the file type for to backup this source to.
    */
-  function get_file_type_id() {
+  public function get_file_type_id() {
     return 'mysql';
   }
 
@@ -91,9 +94,9 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
    *
    *  Returns a list of sql commands, one command per line.
    *  That makes it easier to import without loading the whole file into memory.
-   *  The files are a little harder to read, but human-readability is not a priority
+   *  The files are a little harder to read, but human-readability is not a priority.
    */
-  function _backup_db_to_file($file, $settings) {
+  public function _backup_db_to_file($file, $settings) {
     if (!empty($settings->filters['use_cli']) && $this->_backup_db_to_file_mysqldump($file, $settings)) {
       return TRUE;
     }
@@ -139,11 +142,10 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   /**
    * Backup the databases to a file using the mysqldump command.
    */
-  function _backup_db_to_file_mysqldump($file, $settings) {
+  public function _backup_db_to_file_mysqldump($file, $settings) {
     $success = FALSE;
     $nodata_tables = array();
     $alltables = $this->_get_tables();
-
 
     $command = 'mysqldump --result-file=%file --opt -Q --host=%host --port=%port --user=%user --password=%pass %db';
     $args = array(
@@ -158,15 +160,15 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
     // Ignore the excluded and no-data tables.
     if (!empty($settings->filters['exclude_tables'])) {
       $db = $this->dest_url['path'];
-      foreach ((array)$settings->filters['exclude_tables'] as $table) {
+      foreach ((array) $settings->filters['exclude_tables'] as $table) {
         if (isset($alltables[$table])) {
-          $command .= ' --ignore-table='. $db .'.'. $table;
+          $command .= ' --ignore-table=' . $db . '.' . $table;
         }
       }
-      foreach ((array)$settings->filters['nodata_tables'] as $table) {
+      foreach ((array) $settings->filters['nodata_tables'] as $table) {
         if (isset($alltables[$table])) {
           $nodata_tables[] = $table;
-          $command .= ' --ignore-table='. $db .'.'. $table;
+          $command .= ' --ignore-table=' . $db . '.' . $table;
         }
       }
     }
@@ -184,7 +186,7 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   /**
    * Backup the databases to a file.
    */
-  function _restore_db_from_file($file, $settings) {
+  public function _restore_db_from_file($file, $settings) {
     $num = 0;
 
     if ($file->open() && $conn = $this->_get_db_connection()) {
@@ -216,7 +218,7 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
    *
    * Supports the formatting created by mysqldump, but won't handle multiline comments.
    */
-  function _read_sql_command_from_file($file) {
+  public function _read_sql_command_from_file($file) {
     $out = '';
     while ($line = $file->read()) {
       $first2 = substr($line, 0, 2);
@@ -237,7 +239,7 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   /**
    * Get a list of tables in the database.
    */
-  function _get_table_names() {
+  public function _get_table_names() {
     $out = array();
     foreach ($this->_get_tables() as $table) {
       $out[$table['name']] = $table['name'];
@@ -248,7 +250,7 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   /**
    * Get a list of views in the database.
    */
-  function _get_view_names() {
+  public function _get_view_names() {
     $out = array();
     foreach ($this->_get_views() as $view) {
       $out[$view['name']] = $view['name'];
@@ -259,29 +261,29 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   /**
    * Lock the list of given tables in the database.
    */
-  function _lock_tables($tables) {
+  public function _lock_tables($tables) {
     if ($tables) {
       $tables_escaped = array();
       foreach ($tables as $table) {
-        $tables_escaped[] = '`'. db_escape_table($table) .'`  WRITE';
+        $tables_escaped[] = '`' . db_escape_table($table) . '`  WRITE';
       }
-      $this->query('LOCK TABLES '. implode(', ', $tables_escaped));
+      $this->query('LOCK TABLES ' . implode(', ', $tables_escaped));
     }
   }
 
   /**
    * Unlock all tables in the database.
    */
-  function _unlock_tables($settings) {
+  public function _unlock_tables($settings) {
     $this->query('UNLOCK TABLES');
   }
 
   /**
    * Get a list of tables in the db.
    */
-  function _get_tables() {
+  public function _get_tables() {
     $out = array();
-    // get auto_increment values and names of all tables
+    // get auto_increment values and names of all tables.
     $tables = $this->query("show table status", array(), array('fetch' => PDO::FETCH_ASSOC));
     foreach ($tables as $table) {
       // Lowercase the keys because between Drupal 7.12 and 7.13/14 the default query behavior was changed.
@@ -297,9 +299,9 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   /**
    * Get a list of views in the db.
    */
-  function _get_views() {
+  public function _get_views() {
     $out = array();
-    // get auto_increment values and names of all tables
+    // get auto_increment values and names of all tables.
     $tables = $this->query("show table status", array(), array('fetch' => PDO::FETCH_ASSOC));
     foreach ($tables as $table) {
       // Lowercase the keys because between Drupal 7.12 and 7.13/14 the default query behavior was changed.
@@ -312,12 +314,12 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
     return $out;
   }
 
-   /**
+  /**
    * Get the sql for the structure of the given view.
    */
-  function _get_view_create_sql($view) {
+  public function _get_view_create_sql($view) {
     $out = "";
-    // Switch SQL mode to get rid of "CREATE ALGORITHM..." what requires more permissions + troubles with the DEFINER user
+    // Switch SQL mode to get rid of "CREATE ALGORITHM..." what requires more permissions + troubles with the DEFINER user.
     $sql_mode = $this->query("SELECT @@SESSION.sql_mode")->fetchField();
     $this->query("SET sql_mode = 'ANSI'");
     $result = $this->query("SHOW CREATE VIEW `" . $view['name'] . "`", array(), array('fetch' => PDO::FETCH_ASSOC));
@@ -326,7 +328,7 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
       // Lowercase the keys because between Drupal 7.12 and 7.13/14 the default query behavior was changed.
       // See: http://drupal.org/node/1171866
       $create = array_change_key_case($create);
-      $out .= "DROP VIEW IF EXISTS `". $view['name'] ."`;\n";
+      $out .= "DROP VIEW IF EXISTS `" . $view['name'] . "`;\n";
       $out .= "SET sql_mode = 'ANSI';\n";
       $out .= strtr($create['create view'], "\n", " ") . ";\n";
       $out .= "SET sql_mode = '$sql_mode';\n";
@@ -339,66 +341,66 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   /**
    * Get the sql for the structure of the given table.
    */
-  function _get_table_structure_sql($table) {
+  public function _get_table_structure_sql($table) {
     $out = "";
-    $result = $this->query("SHOW CREATE TABLE `". $table['name'] ."`", array(), array('fetch' => PDO::FETCH_ASSOC));
+    $result = $this->query("SHOW CREATE TABLE `" . $table['name'] . "`", array(), array('fetch' => PDO::FETCH_ASSOC));
     foreach ($result as $create) {
       // Lowercase the keys because between Drupal 7.12 and 7.13/14 the default query behavior was changed.
       // See: http://drupal.org/node/1171866
       $create = array_change_key_case($create);
-      $out .= "DROP TABLE IF EXISTS `". $table['name'] ."`;\n";
+      $out .= "DROP TABLE IF EXISTS `" . $table['name'] . "`;\n";
       // Remove newlines and convert " to ` because PDO seems to convert those for some reason.
       $out .= strtr($create['create table'], array("\n" => ' ', '"' => '`'));
       if ($table['auto_increment']) {
-        $out .= " AUTO_INCREMENT=". $table['auto_increment'];
+        $out .= " AUTO_INCREMENT=" . $table['auto_increment'];
       }
       $out .= ";\n";
     }
     return $out;
   }
-  
+
   /**
-   *  Get the sql to insert the data for a given table
+   * Get the sql to insert the data for a given table.
    */
-  function _dump_table_data_sql_to_file($file, $table) {
+  public function _dump_table_data_sql_to_file($file, $table) {
     $rows_per_line = variable_get('backup_migrate_data_rows_per_line', 30);
     $bytes_per_line = variable_get('backup_migrate_data_bytes_per_line', 2000);
-  
+
     $lines = 0;
-    $data = $this->query("SELECT * FROM `". $table['name'] ."`", array(), array('fetch' => PDO::FETCH_ASSOC));
+    $data = $this->query("SELECT * FROM `" . $table['name'] . "`", array(), array('fetch' => PDO::FETCH_ASSOC));
     $rows = $bytes = 0;
 
-    // Escape backslashes, PHP code, special chars
+    // Escape backslashes, PHP code, special chars.
     $search = array('\\', "'", "\x00", "\x0a", "\x0d", "\x1a");
     $replace = array('\\\\', "''", '\0', '\n', '\r', '\Z');
-  
+
     $line = array();
     foreach ($data as $row) {
       // DB Escape the values.
       $items = array();
       foreach ($row as $key => $value) {
-        $items[] = is_null($value) ? "null" : "'". str_replace($search, $replace, $value) ."'";
+        $items[] = is_null($value) ? "null" : "'" . str_replace($search, $replace, $value) . "'";
       }
-  
+
       // If there is a row to be added.
       if ($items) {
         // Start a new line if we need to.
         if ($rows == 0) {
-          $file->write("INSERT INTO `". $table['name'] ."` VALUES ");
+          $file->write("INSERT INTO `" . $table['name'] . "` VALUES ");
           $bytes = $rows = 0;
         }
         // Otherwise add a comma to end the previous entry.
         else {
           $file->write(",");
         }
-  
+
         // Write the data itself.
         $sql = implode(',', $items);
-        $file->write('('. $sql .')');
+        $file->write('(' . $sql . ')');
         $bytes += strlen($sql);
         $rows++;
-  
-        // Finish the last line if we've added enough items
+
+        // Finish the last line if we've added enough items.
         if ($rows >= $rows_per_line || $bytes >= $bytes_per_line) {
           $file->write(";\n");
           $lines++;
@@ -411,14 +413,14 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
       $file->write(";\n");
       $lines++;
     }
-  
+
     return $lines;
   }
 
   /**
    * Get the db connection for the specified db.
    */
-  function _get_db_connection() {
+  public function _get_db_connection() {
     if (!$this->connection) {
       $this->connection = parent::_get_db_connection();
       // Set the sql mode because the default is ANSI,TRADITIONAL which is not aware of collation or storage engine.
@@ -430,7 +432,7 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
   /**
    * Run a db query on this destination's db.
    */
-  function query($query, $args = array(), $options = array()) {
+  public function query($query, $args = array(), $options = array()) {
     if ($conn = $this->_get_db_connection()) {
       return $conn->query($query, $args, $options);
     }
@@ -440,11 +442,11 @@ class backup_migrate_source_db_mysql extends backup_migrate_source_db {
    * The header for the top of the sql dump file. These commands set the connection
    *  character encoding to help prevent encoding conversion issues.
    */
-  function _get_sql_file_header() {
+  public function _get_sql_file_header() {
     $info = $this->_db_info();
 
     return "-- Backup and Migrate (Drupal) MySQL Dump
--- Backup and Migrate Version: ". BACKUP_MIGRATE_VERSION ."
+-- Backup and Migrate Version: " . BACKUP_MIGRATE_VERSION . "
 -- http://drupal.org/project/backup_migrate
 -- Drupal Version: " . VERSION . "
 -- http://drupal.org/
@@ -466,11 +468,11 @@ SET NAMES utf8;
 
 ";
   }
-  
+
   /**
    * The footer of the sql dump file.
    */
-  function _get_sql_file_footer() {
+  public function _get_sql_file_footer() {
     return "
   
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -485,7 +487,7 @@ SET NAMES utf8;
   /**
    * Get the version info for the given DB.
    */
-  function _db_info() {
+  public function _db_info() {
     $db = $this->_get_db_connection();
     return array(
       'type' => 'mysql',
@@ -494,4 +496,3 @@ SET NAMES utf8;
   }
 
 }
-
