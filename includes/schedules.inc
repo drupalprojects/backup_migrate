@@ -487,7 +487,7 @@ class backup_migrate_schedule extends backup_migrate_item {
       "#type" => "textfield",
       "#title" => t('Cron Schedule'),
       '#length' => 10,
-      "#description" => t('Specify the frequecy of the schedule using standard cron notation. For more information see the !elysiareadme.', array('!elysiareadme' => l(t('the Elysia Cron README'), 'http://drupalcode.org/project/elysia_cron.git/blob/refs/heads/7.x-1.x:/README.txt'))),
+      "#description" => t('Specify the frequency of the schedule using standard cron notation. For more information see the !elysiareadme.', array('!elysiareadme' => l(t('the Elysia Cron README'), 'http://drupalcode.org/project/elysia_cron.git/blob/refs/heads/7.x-1.x:/README.txt'))),
       "#default_value" => $this->get('cron_schedule'),
       '#parents' => array('cron_schedule'),
     );
